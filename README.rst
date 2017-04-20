@@ -25,47 +25,59 @@ Install django-djeddit::
 
     pip install django-djeddit
 
-Add it to your `INSTALLED_APPS`:
+Add it and its dependencies to your `INSTALLED_APPS`:
 
 .. code-block:: python
 
-    INSTALLED_APPS = (
+    INSTALLED_APPS = [
         ...
-        'djeddit.apps.DjedditConfig',
+        'crispy_forms',
+        'mptt',
+        'djeddit',
         ...
-    )
+        ]
+
+And djeddit_settings to context_processors:
+
+.. code-block:: python
+    
+    'context_processors': [
+        ...
+        'djeddit.context_processors.djeddit_settings',
+        ...
+    ]
 
 Add django-djeddit's URL patterns:
 
 .. code-block:: python
 
-    from djeddit import urls as djeddit_urls
-
-
     urlpatterns = [
         ...
-        url(r'^', include(djeddit_urls)),
+        url(r'^', include('djeddit.urls')),
         ...
     ]
+    
+Migrate models:
+
+.. code-block::
+
+    python manage.py migrate djeddit
 
 Features
 --------
 
 * TODO
 
-Running Tests
--------------
-
-Does the code actually work?
-
-::
-
-    source <YOURVIRTUALENV>/bin/activate
-    (myenv) $ pip install tox
-    (myenv) $ tox
-
 Credits
 -------
+
+Dependencies:
+
+*  django-mptt_
+*  crispy_forms_
+
+.. _django-mptt: https://github.com/django-mptt/django-mptt
+.. _crispy_forms: https://github.com/django-crispy-forms/django-crispy-forms
 
 Tools used in rendering this package:
 
