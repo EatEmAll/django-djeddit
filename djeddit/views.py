@@ -1,116 +1,172 @@
-# -*- coding: utf-8 -*-
-from django.views.generic import (
-    CreateView,
-    DeleteView,
-    DetailView,
-    UpdateView,
-    ListView
-)
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.shortcuts import render, redirect
 
-from .models import (
-	Topic,
-	Thread,
-	Post,
-	UserPostVote,
-)
+from djeddit.forms import TopicForm, ThreadForm, PostForm
+from djeddit.models import Topic, Thread, Post, UserPostVote
+from djeddit.templatetags.djeddit_tags import postScore
+from django.contrib.auth.models import User
 
 
-class TopicCreateView(CreateView):
+# Create your views here.
 
-    model = Topic
+# @user_passes_test(lambda user: user.is_superuser)
 
-
-class TopicDeleteView(DeleteView):
-
-    model = Topic
-
-
-class TopicDetailView(DetailView):
-
-    model = Topic
-
-
-class TopicUpdateView(UpdateView):
-
-    model = Topic
-
-
-class TopicListView(ListView):
-
-    model = Topic
-
-
-class ThreadCreateView(CreateView):
-
-    model = Thread
-
-
-class ThreadDeleteView(DeleteView):
-
-    model = Thread
+def createThread(request, topic_title=None):
+    if topic_title:
+        try:
+            if request.method == 'POST':
+                topic = Topic.objects.get(title=topic_title)
+                threadForm = ThreadForm(request.POST, prefix='thread')
+                postForm = PostForm(request.POST, prefix='post')
+                if threadForm.is_valid() and postForm.is_valid():
+                    thread = threadForm.save(commit=False)
+                    post = postForm.save(commit=False)
+                    thread.op = post
+                    thread.topic = topic
+                    thread.save()
+                    post.thread = thread
+                    if request.user.is_authenticated:
+                        post.created_by = request.user
+                    post.save()
+                    return redirect('threadPage', topic.title, thread.id)
+            else:
+                threadForm = ThreadForm(prefix='thread')
+                postForm = PostForm(prefix='post')
+            context = dict(threadForm=threadForm, postForm=postForm)
+            return render(request, 'djeddit/create_thread.html', context)
+        except Topic.DoesNotExist:
+            pass
+    return redirect('topics')
 
 
-class ThreadDetailView(DetailView):
-
-    model = Thread
-
-
-class ThreadUpdateView(UpdateView):
-
-    model = Thread
-
-
-class ThreadListView(ListView):
-
-    model = Thread
-
-
-class PostCreateView(CreateView):
-
-    model = Post
+def topicsPage(request):
+    topics = Topic.objects.all()
+    showForm = False
+    if request.method == 'POST':
+        topicForm = TopicForm(request.POST)
+        if topicForm.is_valid():
+            topicForm.save()
+            return redirect('topics')
+        showForm = True
+    else:
+        topicForm = TopicForm()
+    context = dict(topics=topics, topicForm=topicForm, showForm=showForm)
+    return render(request, 'djeddit/topics.html', context)
 
 
-class PostDeleteView(DeleteView):
-
-    model = Post
-
-
-class PostDetailView(DetailView):
-
-    model = Post
-
-
-class PostUpdateView(UpdateView):
-
-    model = Post
+def topicPage(request, topic_title=None):
+    if topic_title:
+        try:
+            topic = Topic.objects.get(title=topic_title)
+            threads = Thread.objects.filter(topic=topic)
+            context = dict(topic=topic, threads=threads, showCreatedBy=True, showTopic=False)
+            return render(request, 'djeddit/topic.html', context)
+        except Topic.DoesNotExist:
+            pass
+    return redirect('topics')
 
 
-class PostListView(ListView):
-
-    model = Post
-
-
-class UserPostVoteCreateView(CreateView):
-
-    model = UserPostVote
-
-
-class UserPostVoteDeleteView(DeleteView):
-
-    model = UserPostVote
-
-
-class UserPostVoteDetailView(DetailView):
-
-    model = UserPostVote
+def threadPage(request, topic_title='', thread_id=''):
+    if topic_title and thread_id:
+        try:
+            thread = Thread.objects.get(id=thread_id)
+            if thread.topic.title == topic_title:
+                thread.views += 1
+                thread.save()
+                context = dict(thread=thread, nodes=thread.op.getReplies())
+                return render(request, 'djeddit/thread.html', context)
+        except Thread.DoesNotExist:
+            pass
+    return redirect('topics')
 
 
-class UserPostVoteUpdateView(UpdateView):
+def homePage(request):
+    # context = sorted(dict(request.GET, **request.POST).items())
+    context = dict(request.GET, **request.POST)
+    return render(request, 'djeddit/home.html', context)
 
-    model = UserPostVote
+
+def replyPost(request, post_uid=''):
+    repliedPost = Post.objects.get(uid=post_uid)
+    thread = repliedPost.getThread()
+    repliedUser = repliedPost.created_by.username if repliedPost.created_by else 'guest'
+    if request.method == 'POST':
+        postForm = PostForm(request.POST)
+        if postForm.is_valid():
+            post = postForm.save(commit=False)
+            post.parent = repliedPost
+            post.created_by = request.user
+            post.save()
+            repliedPost.children.add(post)
+        return redirect('threadPage', thread.topic.title, thread.id)
+    else:
+        postForm = PostForm()
+        postForm.fields['content'].label = ''
+        context = dict(postForm=postForm, thread_id=thread.id, post_uid=post_uid, repliedUser=repliedUser)
+        return render(request, 'djeddit/reply_form.html', context)
 
 
-class UserPostVoteListView(ListView):
+def editPost(request, post_uid=''):
+    post = Post.objects.get(uid=post_uid)
+    if request.method == 'POST':
+        postForm = PostForm(request.POST, instance=post)
+        if postForm.is_valid():
+            post = postForm.save()
+        thread = post.getThread()
+        return redirect('threadPage', thread.topic.title, thread.id)
+    else:
+        postForm = PostForm(vars(post))
+        postForm.fields['content'].label = ''
+        context = dict(postForm=postForm, post_uid=post.uid)
+        return render(request, 'djeddit/edit_post.html', context)
 
-    model = UserPostVote
 
+@login_required
+def votePost(request):
+    post_uid = request.POST['post']
+    vote_val = request.POST['vote']
+    post = Post.objects.get(uid=post_uid)
+    if post.created_by != request.user:
+        try:
+            userPostVote = UserPostVote.objects.get(user=request.user, post=post)
+            oldval = userPostVote.val
+            userPostVote.val = max(min(int(vote_val), 1), -1)
+            userPostVote.save()
+            voteDelta = userPostVote.val - oldval
+        except UserPostVote.DoesNotExist:
+            userPostVote = UserPostVote.objects.create(user=request.user, post=post, val=max(min(int(vote_val), 1), -1))
+            voteDelta = userPostVote.val
+        post.score += voteDelta
+        post.save()
+    scoreStr = postScore(post.score)
+    return JsonResponse(dict(scoreStr=scoreStr, score=post.score))
+
+
+def userSummary(request, username):
+    user = User.objects.get(username=username)
+    threads = Thread.objects.filter(op__created_by=user)
+    for t in threads:
+        t.modified_on = t.op.modified_on
+    replies = Post.objects.filter(created_by=user).exclude(uid__in=(t.op.uid for t in threads))
+    context = dict(items=sorted(list(threads) + list(replies), key=lambda n: n.modified_on, reverse=True),
+                   tCount=threads.count(),
+                   rCount=replies.count(),
+                   tPoints=(sum(t.op.score for t in threads)),
+                   rPoints=(sum(r.score for r in replies)),
+                   pageUser=user)
+    return render(request, 'djeddit/user_summary.html', context)
+
+
+def userThreadsPage(request, username):
+    user = User.objects.get(username=username)
+    created_threads = Thread.objects.filter(op__created_by=user)
+    context = dict(threads=created_threads, showCreatedBy=False, showTopic=True, pageUser=user)
+    return render(request, 'djeddit/user_threads.html', context)
+
+
+def userRepliesPage(request, username):
+    user = User.objects.get(username=username)
+    replies = Post.objects.filter(created_by=user, parent__isnull=False)
+    context = dict(replies=replies, pageUser=user)
+    return render(request, 'djeddit/user_replies.html', context)

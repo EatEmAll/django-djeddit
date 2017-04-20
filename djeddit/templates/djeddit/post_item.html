@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+{% load djeddit_tags %}
+{% load mptt_tags %}
+
+<div class="row">
+    <div class="col-md-{% postLevelWidth thread node %}"></div>
+    <div class="col-md-{% postWidth thread node %}">
+        <div id="{{ node.uid }}" class="post-container">
+            {% if node != thread.op %}
+                <div class="bs-callout-heading">
+                    <i class="fa fa-minus-square-o text-muted toggle-replies"
+                       onclick="window.postFuncs.toggleReplies('{{ node.uid }}')"></i>
+                    <h4 class="post-user">
+                        {% if node.created_by %}
+                            <a href="{% url 'userSummary' node.created_by %}">{% postUserName node.created_by %}</a>
+                        {% else %}
+                            {% postUserName node.created_by %}
+                        {% endif %}
+                    </h4>
+
+                    <h6 class="text-muted post-score">{% postScore node.score %}</h6>
+                    <h6>
+                        {% postDate node.modified_on %}
+                        {% if node.created_on != node.modified_on %}
+                            (edited)
+                        {% endif %}
+                    </h6>
+                </div>
+            {% endif %}
+            <div class="bs-callout-main">
+                <div class="minicol">
+                    {% if user.is_authenticated and user != node.created_by %}
+                        <div class="glyphicon glyphicon-chevron-up hover-point {% postVoteClicked user node True %} {% postVoteOP thread node %}"
+                             onclick="window.postFuncs.votePost('{{ node.uid }}', !$(this).hasClass('color-primary'), false)"></div>
+                        {% if node == thread.op %}
+                            <h4 class="post-score">{{ node.score }}</h4>
+                        {% endif %}
+                        <div class="glyphicon glyphicon-chevron-down hover-point {% postVoteClicked user node False %}"
+                             onclick="window.postFuncs.votePost('{{ node.uid }}', false, !$(this).hasClass('color-primary'))"></div>
+                    {% endif %}
+                </div>
+                <div class="postcol">
+                    <p class="post-content">{{ node.content }}</p>
+                    <div class="btn-group btn-group-xs" role="group">
+                        {% if node.created_by == user %}
+                            <button onclick="window.postFuncs.toggleEditForm('{{ node.uid }}')" class="btn btn-default">
+                                Edit
+                            </button>
+                        {% endif %}
+                        <button onclick="window.postFuncs.togglePostForm('{{ node.uid }}', this, 'reply_post/')" class="btn btn-default">
+                            Reply
+                        </button>
+                        {% if node.parent %}
+                            <button onclick="location.href='#{{ node.parent.uid }}'" class="btn btn-default">
+                                Parent
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% if useRecurseTree and not node.is_leaf_node %}
+                {{ children }}
+            {% endif %}
+        </div>
+    </div>
+</div>

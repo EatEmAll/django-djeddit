@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+{% extends BASE_TEMPLATE %}
+{% load staticfiles %}
+{% load djeddit_tags %}
+{% load mptt_tags %}
+{% block title %}
+    <ol class="breadcrumb">
+        <li><a href="{% url 'topics' %}">Home</a></li>
+        <li><a href="{% url 'topicPage' thread.topic.title %}">{{ thread.topic.title }}</a></li>
+    </ol>
+{% endblock %}
+{% block content %}
+    <div class="row">
+                <div class="bs-callout">
+                    <div class="bs-callout-heading">
+                        <h3 class="callout-title">
+                            {% if thread.url %}
+                                <a href="{{ thread.url }}">{{ thread.title }}</a>
+                            {% else %}
+                                {{ thread.title }}
+                            {% endif %}
+                        </h3>
+                        <h6 class="inline">
+                            Submitted by {% postUserName thread.op.created_by %} on {{ thread.op.created_on }}
+                        </h6>
+                    </div>
+                    {% with thread.op as node %}
+                        {% include 'djeddit/post_item.html' %}
+                    {% endwith %}
+                </div>
+        <div id="comments-callout" class="bs-callout">
+            <h4 class="callout-title">{% getAmount nodes|length 'comment' %}</h4>
+            {% recursetree nodes %}
+                {% with True as useRecurseTree %}
+                    {% include 'djeddit/post_item.html' %}
+                {% endwith %}
+            {% endrecursetree %}
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script src="{% static 'djeddit/js/util.js' %}"></script>
+    <script src="{% static 'djeddit/js/thread.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+{% extends BASE_TEMPLATE %}
+{% load staticfiles %}
+{% load djeddit_tags %}
+{% load crispy_forms_tags %}
+{% block title %}
+    <div class="container">
+        <h2 id="pageTitle">Topics
+        {% if user.is_superuser %}
+            <button id="btnNewTopic" class="btn btn-primary btn-xs" onclick="$('#topic-form-wrapper').toggleClass('hidden')">New Topic</button>
+        {% endif %}
+        </h2>
+        {% if user.is_superuser %}
+            <div id="topic-form-wrapper" class="{% if not showForm %} hidden {% endif %}">
+                {% crispy topicForm %}
+                {% if topicForm.errors %}
+                    <ul class="help-block">
+                        {% for errors in topicForm.errors.values %}
+                            {% for error in errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+{% block content %}
+    <div class="col-md-8">
+        <table id="topics" class="table">
+            <thead>
+                <tr>
+                    <th class="col-md-10">Topic</th>
+                    <th class="col-md-2">Threads</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for topic in topics %}
+                    <tr>
+                        <td class="col-md-10"><a href="{% url 'topicPage' topic.title %}"><h4 class="inline">{{ topic.title }}</h4></a> </td>
+                        <td class="col-md-2"><h4><h5>{{ topic.getThreadCount }}</h5></h4></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}
+{% block scripts %}
+    <script src="{% static 'djeddit/js/util.js' %}"></script>
+{% endblock %}

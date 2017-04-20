@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+{% load crispy_forms_tags %}
+<form method="post" accept-charset="utf-8" action="{% url 'editPost' post_uid %}">{% csrf_token %}
+    {{ postForm|crispy }}
+    <div class="btn-group btn-group-xs" role="group">
+        <input type="submit" class="btn btn-default" value="Submit"/>
+        <button type="button" class="btn btn-default clicked" onclick="window.postFuncs.toggleEditForm('{{ post_uid }}', this)">Discard</button>
+    </div>
+</form>

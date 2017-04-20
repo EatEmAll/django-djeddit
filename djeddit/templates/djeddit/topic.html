@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+{% extends BASE_TEMPLATE %}
+{% load djeddit_tags %}
+{% block title %}
+    <div class="container">
+        <h2>{{ topic.title }}
+            <button class="btn btn-primary btn-xs" onclick="location.href='{% url 'createThread' topic.title %}'">New Thread</button>
+        </h2>
+        <ol class="breadcrumb">
+            <li><a href="{% url 'topics' %}">Home</a></li>
+            <li class="active">{{ topic.title }}</li>
+        </ol>
+    </div>
+{% endblock %}
+{% block content %}
+    <div class="col-md-8">
+        <ul class="list-group">
+            {% for thread in threads %}
+                {% include 'djeddit/thread_item.html' %}
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

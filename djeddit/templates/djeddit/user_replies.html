@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+{% extends "djeddit/user_page.html" %}
+{% load djeddit_tags %}
+{% block navtabs %}
+    <li role="presentation"><a href="{% url 'userSummary' pageUser.username %}">Summary</a></li>
+    <li role="presentation"><a href="{% url 'userThreads' pageUser.username %}">Threads</a></li>
+    <li role="presentation" class="active"><a href="#">Replies</a></li>
+{% endblock %}
+{% block groupItems %}
+    {% for reply in replies %}
+        {% include 'djeddit/user_reply_item.html' %}
+    {% endfor %}
+{% endblock %}

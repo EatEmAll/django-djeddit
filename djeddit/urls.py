@@ -1,108 +1,17 @@
 # -*- coding: utf-8 -*-
 from django.conf.urls import url
-from django.views.generic import TemplateView
-
 from . import views
 
 urlpatterns = [
-    url(
-        regex="^Topic/~create/$",
-        view=views.TopicCreateView.as_view(),
-        name='Topic_create',
-    ),
-    url(
-        regex="^Topic/(?P<pk>\d+)/~delete/$",
-        view=views.TopicDeleteView.as_view(),
-        name='Topic_delete',
-    ),
-    url(
-        regex="^Topic/(?P<pk>\d+)/$",
-        view=views.TopicDetailView.as_view(),
-        name='Topic_detail',
-    ),
-    url(
-        regex="^Topic/(?P<pk>\d+)/~update/$",
-        view=views.TopicUpdateView.as_view(),
-        name='Topic_update',
-    ),
-    url(
-        regex="^Topic/$",
-        view=views.TopicListView.as_view(),
-        name='Topic_list',
-    ),
-	url(
-        regex="^Thread/~create/$",
-        view=views.ThreadCreateView.as_view(),
-        name='Thread_create',
-    ),
-    url(
-        regex="^Thread/(?P<pk>\d+)/~delete/$",
-        view=views.ThreadDeleteView.as_view(),
-        name='Thread_delete',
-    ),
-    url(
-        regex="^Thread/(?P<pk>\d+)/$",
-        view=views.ThreadDetailView.as_view(),
-        name='Thread_detail',
-    ),
-    url(
-        regex="^Thread/(?P<pk>\d+)/~update/$",
-        view=views.ThreadUpdateView.as_view(),
-        name='Thread_update',
-    ),
-    url(
-        regex="^Thread/$",
-        view=views.ThreadListView.as_view(),
-        name='Thread_list',
-    ),
-	url(
-        regex="^Post/~create/$",
-        view=views.PostCreateView.as_view(),
-        name='Post_create',
-    ),
-    url(
-        regex="^Post/(?P<pk>\d+)/~delete/$",
-        view=views.PostDeleteView.as_view(),
-        name='Post_delete',
-    ),
-    url(
-        regex="^Post/(?P<pk>\d+)/$",
-        view=views.PostDetailView.as_view(),
-        name='Post_detail',
-    ),
-    url(
-        regex="^Post/(?P<pk>\d+)/~update/$",
-        view=views.PostUpdateView.as_view(),
-        name='Post_update',
-    ),
-    url(
-        regex="^Post/$",
-        view=views.PostListView.as_view(),
-        name='Post_list',
-    ),
-	url(
-        regex="^UserPostVote/~create/$",
-        view=views.UserPostVoteCreateView.as_view(),
-        name='UserPostVote_create',
-    ),
-    url(
-        regex="^UserPostVote/(?P<pk>\d+)/~delete/$",
-        view=views.UserPostVoteDeleteView.as_view(),
-        name='UserPostVote_delete',
-    ),
-    url(
-        regex="^UserPostVote/(?P<pk>\d+)/$",
-        view=views.UserPostVoteDetailView.as_view(),
-        name='UserPostVote_detail',
-    ),
-    url(
-        regex="^UserPostVote/(?P<pk>\d+)/~update/$",
-        view=views.UserPostVoteUpdateView.as_view(),
-        name='UserPostVote_update',
-    ),
-    url(
-        regex="^UserPostVote/$",
-        view=views.UserPostVoteListView.as_view(),
-        name='UserPostVote_list',
-    ),
-	]
+    url(r'^$', views.homePage, name='home'),
+    url(r'^topics/?$', views.topicsPage, name='topics'),
+    url(r'^topics/(\w+)?/?$', views.topicPage, name='topicPage'),
+    url(r'^topics/(\w+)/newthread/?$', views.createThread, name='createThread'),
+    url(r'^topics/(\w+)/(\d+)?/?$', views.threadPage, name='threadPage'),
+    url(r'^reply_post/([\w\-]{36})?/?$', views.replyPost, name='replyPost'),
+    url(r'^edit_post/([\w\-]{36})?/?$', views.editPost, name='editPost'),
+    url(r'^vote_post/?$', views.votePost, name='votePost'),
+    url(r'^user/(.+)/summary/?$', views.userSummary, name='userSummary'),
+    url(r'^user/(.+)/threads/?$', views.userThreadsPage, name='userThreads'),
+    url(r'^user/(.+)/replies/?$', views.userRepliesPage, name='userReplies'),
+]

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+{% load djeddit_tags %}
+<li class="list-group-item">
+    <div class="row">
+        {% with reply.getThread as thread %}
+            <div class="col-md-1 col-icon hover-point" onclick="window.location='{% url 'threadPage' thread.topic.title thread.id %}/#{{ reply.uid }}'">
+                <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-reply fa-stack-1x fa-inverse"></i>
+                </span>
+            </div>
+            <div class="col-md-10 list-group-item-main-col">
+                <a href="{% threadUrl thread %}"><h4 class="inline">{{ thread.title }}</h4></a>
+                <h6 class="text-muted inline">
+                    on <a href="{% url 'topicPage' thread.topic.title %}">{{ thread.topic.title }}</a> {{ reply.created_on }}
+                </h6>
+                <br>
+                <h6 class="inline">
+                    {{ reply.content }}
+                </h6>
+            </div>
+            <div class="col-md-1">
+                <div class="count-box" onclick="window.location='{% url 'threadPage' thread.topic.title thread.id %}/#{{ reply.uid }}'">
+                    <div class="count-box-score text-muted">{{ reply.score }}</div>
+                    <div class="count-box-context text-muted">Points</div>
+                </div>
+            </div>
+        {% endwith %}
+    </div>
+</li>

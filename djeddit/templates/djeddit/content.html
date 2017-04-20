@@ -1,0 +1,8 @@
+<!DOCTYPE html>
+<div class="col-sm-2">
+    <ul class="nav nav-pills nav-stacked">
+    {% for k, v in request.GET.items %}
+        <li role="presentation"><a>{{ k }}: {{ v }}</a></li>
+    {% endfor %}
+    </ul>
+</div>

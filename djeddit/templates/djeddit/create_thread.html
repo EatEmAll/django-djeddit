@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+{% extends BASE_TEMPLATE %}
+{%  load crispy_forms_tags %}
+{% block title %}<h2>New Thread</h2>{% endblock %}
+{% block content %}
+    <div class="col-md-6">
+        <form method="post" accept-charset="utf-8">{% csrf_token %}
+            {{ threadForm|crispy }}
+            {{ postForm|crispy }}
+            <input type="submit" class="btn btn-primary btn-sm" value="Submit"/>
+        </form>
+    </div>
+    <div class="col-md-8"></div>
+
+{% endblock %}

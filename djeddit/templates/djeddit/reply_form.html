@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+{% load crispy_forms_tags %}
+<div class="row">
+    <div class="post-container">
+        <div class="bs-callout-heading"><h6 class="text-muted">Reply to </h6><h4 class="text-primary">{{ repliedUser }}</h4></div>
+        <br/>
+        <form method="post" accept-charset="utf-8" action="{% url 'replyPost' post_uid %}">{% csrf_token %}
+            {{ postForm|crispy }}
+            <div class="btn-group btn-group-xs" role="group">
+                <input type="submit" class="btn btn-default" value="Submit"/>
+                <button type="button" class="btn btn-default" onclick="window.postFuncs.removePostForm('{{ post_uid }}')">Discard</button>
+            </div>
+        </form>
+    </div>
+</div>

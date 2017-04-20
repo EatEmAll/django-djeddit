@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+{% load djeddit_tags %}
+<li class="list-group-item">
+    <div>
+        <div class="row">
+            <div class="col-md-1 col-icon hover-point" onclick="window.location='{% threadUrl thread %}'">
+                <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa {% threadIconClass thread %} fa-stack-1x fa-inverse"></i>
+                </span>
+            </div>
+            <div class="col-md-8 list-group-item-main-col">
+                <a href="{% threadUrl thread %}"><h4 class="inline">{{ thread.title }}</h4></a>
+                <h6 class="text-muted inline">
+                    {% with thread.op.getReplies|length as commentsCount %}
+                        {% if commentsCount %}
+                            <a href='{% url 'threadPage' thread.topic.title thread.id %}/#comments-callout'>{% getAmount commentsCount 'comment' %}</a>
+                        {% else %}
+                            {% getAmount commentsCount 'comment' %}
+                        {% endif %}
+                    {% endwith %}
+                    {% if showTopic %}on <a href="{% url 'topicPage' thread.topic.title %}">{{ thread.topic.title }}</a> {% endif %}
+                </h6>
+                <br>
+                <h6 class="text-muted inline">
+                    {% if showCreatedBy %}
+                        Submitted by {% if thread.op.created_by %}
+                                        <a href="{% url 'userSummary' thread.op.created_by %}">{% postUserName thread.op.created_by %}</a> {% else %} {% postUserName thread.op.created_by %} {% endif %} {% postDate thread.op.created_on 'on ' %}
+                    {% else %}
+                        {{ thread.op.created_on }}
+                    {% endif %}
+                </h6>
+            </div>
+            <div class="col-md-3">
+                <div class="count-box" onclick="window.location='{% url 'threadPage' thread.topic.title thread.id %}'">
+                    <div class="count-box-score text-muted">{{ thread.op.score }}</div>
+                    <div class="count-box-context text-muted">Points</div>
+                </div>
+                <div class="count-box" onclick="window.location='{% url 'threadPage' thread.topic.title thread.id %}'">
+                    <div class="count-box-score text-muted">{{ thread.views }}</div>
+                    <div class="count-box-context text-muted">Views</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</li>

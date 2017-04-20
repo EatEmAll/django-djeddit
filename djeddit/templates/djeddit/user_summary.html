@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+{% extends "djeddit/user_page.html" %}
+{% load djeddit_tags %}
+{% block navtabs %}
+    <li role="presentation" class="active"><a href="#">Summary</a></li>
+    <li role="presentation"><a href="{% url 'userThreads' pageUser.username %}">Threads</a></li>
+    <li role="presentation"><a href="{% url 'userReplies' pageUser.username %}">Replies</a></li>
+{% endblock %}
+{% block groupItems %}
+    {# list of threads & comments by date #}
+    {% with True as showTopic %}
+        {% for item in items %}
+            {% if item.getName == 'Thread' %}
+                {% with item as thread %}
+                    {% include 'djeddit/thread_item.html' %}
+                {% endwith %}
+            {% elif item.getName == 'Post' %}
+                {% with item as reply %}
+                    {% include 'djeddit/user_reply_item.html' %}
+                {% endwith %}
+            {% endif %}
+        {% endfor %}
+    {% endwith %}
+{% endblock %}
+{% block sideContent %}
+    {# User statistics #}
+    <div class="bs-callout" style="margin-top: 0">
+        {# TODO: list number of comments, number of threads , totoal thread points, total reply points #}
+        <div class="row">
+            <div class="col-md-6">
+                <h5>{% getAmount tCount 'thread' %}</h5>
+                <h5>{% getAmount rCount 'reply' %}</h5>
+            </div>
+            <div class="col-md-6">
+                <h5>{% getAmount tPoints 'point' infix='thread' %}</h5>
+                <h5>{% getAmount rPoints 'point' infix='reply' %}</h5>
+            </div>
+        </div>
+        {# TODO: list user creation date, last activity date #}
+    </div>
+{% endblock %}
