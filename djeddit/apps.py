@@ -1,6 +1,5 @@
-# -*- coding: utf-8
 from django.apps import AppConfig
 
 
-class DjedditConfig(AppConfig):
+class djedditConfig(AppConfig):
     name = 'djeddit'

@@ -6,5 +6,5 @@ from django.conf.urls import url, include
 from djeddit.urls import urlpatterns as djeddit_urls
 
 urlpatterns = [
-    url(r'^', include(djeddit_urls, namespace='djeddit')),
+    url(r'^', include(djeddit_urls)),
 ]

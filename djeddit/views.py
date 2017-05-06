@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
+from django.http import Http404, HttpResponseForbidden
 
 from djeddit.forms import TopicForm, ThreadForm, PostForm
 from djeddit.models import Topic, Thread, Post, UserPostVote
@@ -88,15 +89,19 @@ def homePage(request):
 
 
 def replyPost(request, post_uid=''):
-    repliedPost = Post.objects.get(uid=post_uid)
-    thread = repliedPost.getThread()
+    try:
+        repliedPost = Post.objects.get(uid=post_uid)
+        thread = repliedPost.getThread()
+    except (Post.DoesNotExist, Thread.DoesNotExist):
+        raise Http404
     repliedUser = repliedPost.created_by.username if repliedPost.created_by else 'guest'
     if request.method == 'POST':
         postForm = PostForm(request.POST)
         if postForm.is_valid():
             post = postForm.save(commit=False)
             post.parent = repliedPost
-            post.created_by = request.user
+            if request.user.is_authenticated:
+                post.created_by = request.user
             post.save()
             repliedPost.children.add(post)
         return redirect('threadPage', thread.topic.title, thread.id)
@@ -108,12 +113,17 @@ def replyPost(request, post_uid=''):
 
 
 def editPost(request, post_uid=''):
-    post = Post.objects.get(uid=post_uid)
+    try:
+        post = Post.objects.get(uid=post_uid)
+        thread = post.getThread()
+    except (Post.DoesNotExist, Thread.DoesNotExist):
+        raise Http404
+    if request.user != post.created_by and not request.user.is_superuser:
+        return HttpResponseForbidden()
     if request.method == 'POST':
         postForm = PostForm(request.POST, instance=post)
         if postForm.is_valid():
-            post = postForm.save()
-        thread = post.getThread()
+            postForm.save()
         return redirect('threadPage', thread.topic.title, thread.id)
     else:
         postForm = PostForm(vars(post))
@@ -127,7 +137,7 @@ def votePost(request):
     post_uid = request.POST['post']
     vote_val = request.POST['vote']
     post = Post.objects.get(uid=post_uid)
-    if post.created_by != request.user:
+    if post.created_by != request.user or request.user.is_superuser:
         try:
             userPostVote = UserPostVote.objects.get(user=request.user, post=post)
             oldval = userPostVote.val
@@ -139,12 +149,17 @@ def votePost(request):
             voteDelta = userPostVote.val
         post.score += voteDelta
         post.save()
-    scoreStr = postScore(post.score)
-    return JsonResponse(dict(scoreStr=scoreStr, score=post.score))
+        scoreStr = postScore(post.score)
+        return JsonResponse(dict(scoreStr=scoreStr, score=post.score))
+    else:
+        return HttpResponseForbidden()
 
 
 def userSummary(request, username):
-    user = User.objects.get(username=username)
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        raise Http404
     threads = Thread.objects.filter(op__created_by=user)
     for t in threads:
         t.modified_on = t.op.modified_on
@@ -159,14 +174,20 @@ def userSummary(request, username):
 
 
 def userThreadsPage(request, username):
-    user = User.objects.get(username=username)
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        raise Http404
     created_threads = Thread.objects.filter(op__created_by=user)
     context = dict(threads=created_threads, showCreatedBy=False, showTopic=True, pageUser=user)
     return render(request, 'djeddit/user_threads.html', context)
 
 
 def userRepliesPage(request, username):
-    user = User.objects.get(username=username)
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        raise Http404
     replies = Post.objects.filter(created_by=user, parent__isnull=False)
     context = dict(replies=replies, pageUser=user)
     return render(request, 'djeddit/user_replies.html', context)
