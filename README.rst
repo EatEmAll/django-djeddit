@@ -13,11 +13,6 @@ django-djeddit
 
 Bare bones Django forum application with Reddit like features
 
-Documentation
--------------
-
-The full documentation is at https://django-djeddit.readthedocs.io.
-
 Quickstart
 ----------
 
