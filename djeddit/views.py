@@ -17,7 +17,7 @@ def createThread(request, topic_title=None):
     if topic_title:
         try:
             if request.method == 'POST':
-                topic = Topic.objects.get(title=topic_title)
+                topic = Topic.getTopic(topic_title)
                 threadForm = ThreadForm(request.POST, prefix='thread')
                 postForm = PostForm(request.POST, prefix='post')
                 if threadForm.is_valid() and postForm.is_valid():
@@ -30,7 +30,7 @@ def createThread(request, topic_title=None):
                     if request.user.is_authenticated:
                         post.created_by = request.user
                     post.save()
-                    return redirect('threadPage', topic.title, thread.id)
+                    return redirect('threadPage', topic.getUrlTitle(), thread.id)
             else:
                 threadForm = ThreadForm(prefix='thread')
                 postForm = PostForm(prefix='post')
@@ -59,7 +59,7 @@ def topicsPage(request):
 def topicPage(request, topic_title=None):
     if topic_title:
         try:
-            topic = Topic.objects.get(title=topic_title)
+            topic = Topic.getTopic(topic_title)
             threads = Thread.objects.filter(topic=topic)
             context = dict(topic=topic, threads=threads, showCreatedBy=True, showTopic=False)
             return render(request, 'djeddit/topic.html', context)
@@ -71,13 +71,14 @@ def topicPage(request, topic_title=None):
 def threadPage(request, topic_title='', thread_id=''):
     if topic_title and thread_id:
         try:
+            topic = Topic.getTopic(topic_title)
             thread = Thread.objects.get(id=thread_id)
-            if thread.topic.title == topic_title:
+            if thread.topic.title == topic.title:
                 thread.views += 1
                 thread.save()
                 context = dict(thread=thread, nodes=thread.op.getReplies())
                 return render(request, 'djeddit/thread.html', context)
-        except Thread.DoesNotExist:
+        except (Topic.DoesNotExist, Thread.DoesNotExist):
             pass
     return redirect('topics')
 
@@ -104,7 +105,7 @@ def replyPost(request, post_uid=''):
                 post.created_by = request.user
             post.save()
             repliedPost.children.add(post)
-        return redirect('threadPage', thread.topic.title, thread.id)
+        return redirect('threadPage', thread.topic.getUrlTitle(), thread.id)
     else:
         postForm = PostForm()
         postForm.fields['content'].label = ''
@@ -124,7 +125,7 @@ def editPost(request, post_uid=''):
         postForm = PostForm(request.POST, instance=post)
         if postForm.is_valid():
             postForm.save()
-        return redirect('threadPage', thread.topic.title, thread.id)
+        return redirect('threadPage', thread.topic.getUrlTitle(), thread.id)
     else:
         postForm = PostForm(vars(post))
         postForm.fields['content'].label = ''

@@ -24,7 +24,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # 3rd party apps
     'crispy_forms',
-    'registration',
     'mptt',
     # project apps
     'djeddit'

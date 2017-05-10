@@ -38,7 +38,7 @@
             <tbody>
                 {% for topic in topics %}
                     <tr>
-                        <td class="col-md-10"><a href="{% url 'topicPage' topic.title %}"><h4 class="inline">{{ topic.title }}</h4></a> </td>
+                        <td class="col-md-10"><a href="{% url 'topicPage' topic.getUrlTitle %}"><h4 class="inline">{{ topic.title }}</h4></a> </td>
                         <td class="col-md-2"><h4><h5>{{ topic.getThreadCount }}</h5></h4></td>
                     </tr>
                 {% endfor %}

@@ -6,7 +6,7 @@
 {% block title %}
     <ol class="breadcrumb">
         <li><a href="{% url 'topics' %}">Home</a></li>
-        <li><a href="{% url 'topicPage' thread.topic.title %}">{{ thread.topic.title }}</a></li>
+        <li><a href="{% url 'topicPage' thread.topic.getUrlTitle %}">{{ thread.topic.title }}</a></li>
     </ol>
 {% endblock %}
 {% block content %}

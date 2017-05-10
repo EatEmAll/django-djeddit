@@ -18,7 +18,6 @@ def getAmountContext(num, name, infix=''):
             return '{num} {infix} {name}'.format(num=num, infix=infix, name=name)
         return '1 {infix} {name}'.format(name=name, infix=infix)
 
-
 @register.simple_tag
 def getAmount(num, name, infix=''):
     amountContext = getAmountContext(num, name, infix=infix)
@@ -58,7 +57,6 @@ def postVoteClicked(user, post, upvote):
         pass
     return ''
 
-
 @register.simple_tag
 def postVoteOP(thread, post):
     return 'glyphicon-chevron-up-op' if thread.op != post else ''
@@ -91,8 +89,7 @@ def threadUrl(thread):
     """:return thread url if it has one, otherwise forward to thread page"""
     if thread.url:
         return thread.url
-    return reverse('threadPage', args=(thread.topic.title, thread.id))
-
+    return reverse('threadPage', args=(thread.topic.getUrlTitle(), thread.id))
 
 @register.simple_tag
 def threadIconClass(thread):

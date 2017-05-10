@@ -56,7 +56,7 @@ class TopicPageTest(TestCase, TestCalls):
         cls.topic = Topic.objects.create(title='Test_Topic')
 
     def testLoads(self):
-        url = reverse('topicPage', args=[self.topic.title])
+        url = reverse('topicPage', args=[self.topic.getUrlTitle()])
         self._test_call_view_loads(url)
 
     def testRedirects(self):

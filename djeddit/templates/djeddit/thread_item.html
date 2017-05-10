@@ -14,12 +14,12 @@
                 <h6 class="text-muted inline">
                     {% with thread.op.getReplies|length as commentsCount %}
                         {% if commentsCount %}
-                            <a href='{% url 'threadPage' thread.topic.title thread.id %}/#comments-callout'>{% getAmount commentsCount 'comment' %}</a>
+                            <a href='{% url 'threadPage' thread.topic.getUrlTitle thread.id %}/#comments-callout'>{% getAmount commentsCount 'comment' %}</a>
                         {% else %}
                             {% getAmount commentsCount 'comment' %}
                         {% endif %}
                     {% endwith %}
-                    {% if showTopic %}on <a href="{% url 'topicPage' thread.topic.title %}">{{ thread.topic.title }}</a> {% endif %}
+                    {% if showTopic %}on <a href="{% url 'topicPage' thread.topic.getUrlTitle %}">{{ thread.topic.title }}</a> {% endif %}
                 </h6>
                 <br>
                 <h6 class="text-muted inline">
@@ -32,11 +32,11 @@
                 </h6>
             </div>
             <div class="col-md-3">
-                <div class="count-box" onclick="window.location='{% url 'threadPage' thread.topic.title thread.id %}'">
+                <div class="count-box" onclick="window.location='{% url 'threadPage' thread.topic.getUrlTitle thread.id %}'">
                     <div class="count-box-score text-muted">{{ thread.op.score }}</div>
                     <div class="count-box-context text-muted">Points</div>
                 </div>
-                <div class="count-box" onclick="window.location='{% url 'threadPage' thread.topic.title thread.id %}'">
+                <div class="count-box" onclick="window.location='{% url 'threadPage' thread.topic.getUrlTitle thread.id %}'">
                     <div class="count-box-score text-muted">{{ thread.views }}</div>
                     <div class="count-box-context text-muted">Views</div>
                 </div>

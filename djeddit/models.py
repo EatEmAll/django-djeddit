@@ -1,5 +1,6 @@
 import uuid
 from django.conf import settings
+from django.core.validators import RegexValidator
 from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
 
@@ -30,10 +31,21 @@ class NamedModel(models.Model):
 
 
 class Topic(NamedModel):
-    title = models.CharField(max_length=120, blank=False, unique=True)
+    alphanumeric = RegexValidator(r'^[0-9a-zA-Z ]*$', 'Only alphanumeric characters are allowed.')
+    title = models.CharField(max_length=120, blank=False, unique=True, validators=[alphanumeric])
 
     def getThreadCount(self):
         return Thread.objects.filter(topic=self).count()
+
+    def getUrlTitle(self):
+        return self.title.replace(' ', '_')
+
+    @staticmethod
+    def getTopic(title):
+        try:
+            return Topic.objects.get(title=title)
+        except Topic.DoesNotExist:
+            return Topic.objects.get(title=title.replace('_', ' '))
 
 
 class Thread(NamedModel):
