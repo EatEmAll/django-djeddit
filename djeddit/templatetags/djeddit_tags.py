@@ -2,9 +2,9 @@ from datetime import datetime
 from django import VERSION as DJANGO_VERSION
 from django import template
 if DJANGO_VERSION[:2] < (1, 10):
-    from django.urls import reverse
-else:
     from django.core.urlresolvers import reverse
+else:
+    from django.urls import reverse
 from django.utils import formats
 from django.utils.timezone import utc
 from djeddit.models import UserPostVote
