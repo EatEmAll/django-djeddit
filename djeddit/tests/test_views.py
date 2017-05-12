@@ -1,7 +1,10 @@
+from django import VERSION as DJANGO_VERSION
 from django.test import TestCase
-from django.urls import reverse
+if DJANGO_VERSION[:2] < (1, 10):
+    from django.urls import reverse
+else:
+    from django.core.urlresolvers import reverse
 from djeddit.utils.base_tests import TestCalls, createUser
-
 from djeddit.models import Topic, Thread, Post, gen_uuid, UserPostVote
 
 
