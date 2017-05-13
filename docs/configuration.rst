@@ -17,7 +17,7 @@ To use django-djeddit in a project, add it to your `INSTALLED_APPS`:
 And djeddit_settings to context_processors:
 
 .. code-block:: python
-    
+
     'context_processors': [
         ...
         'djeddit.context_processors.djeddit_settings',
@@ -33,14 +33,13 @@ Add django-djeddit's URL patterns:
         url(r'^', include('djeddit.urls')),
         ...
     ]
-    
+
 Migrate models:
 
 .. code-block::
 
     python manage.py migrate djeddit
-    
-=====
+
 Additional Options
 =====
 
@@ -52,3 +51,23 @@ You can change it to something by adding this to settings.py:
 
     DJEDDIT_BASE_TEMPLATE = "path/to/template.html"
 
+In order for the base template to work properly with the app's templtes it should contain the following:
+
+within <head>...</head>:
+
+.. code-block:: python
+
+    {% load staticfiles %}
+    {% include 'djeddit/base_stylesheets.html' %}
+
+within <body>...</body>:
+
+.. code-block:: python
+
+    {% block title %}{% endblock %}
+    {% block content %}{% endblock %}
+    {% block scripts %}{% endblock %}
+    {% include 'djeddit/base_scripts.html' %}
+    {% block scripts %}{% endblock %}
+
+You can look at the structue of djeddit/base.html for reference.

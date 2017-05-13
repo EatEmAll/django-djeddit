@@ -13,6 +13,11 @@ django-djeddit
 
 Bare bones Django forum application with Reddit like features
 
+Documentation
+-------------
+
+The full documentation is at https://django-djeddit.readthedocs.io.
+
 Quickstart
 ----------
 
@@ -35,7 +40,7 @@ Add it and its dependencies to your `INSTALLED_APPS`:
 And djeddit_settings to context_processors:
 
 .. code-block:: python
-    
+
     'context_processors': [
         ...
         'djeddit.context_processors.djeddit_settings',
@@ -51,12 +56,22 @@ Add django-djeddit's URL patterns:
         url(r'^', include('djeddit.urls')),
         ...
     ]
-    
+
 Migrate models:
 
 .. code-block::
 
     python manage.py migrate djeddit
+
+
+Create a topic:
+
+.. code-block:: python
+
+    from djeddit.models import Topic
+    Topic.objects.create(title='Test Topic')
+
+Run the app and go to /topics page.
 
 Features
 --------
