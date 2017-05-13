@@ -1,6 +1,6 @@
-=====
+=============
 Configuration
-=====
+=============
 
 To use django-djeddit in a project, add it to your `INSTALLED_APPS`:
 
@@ -36,12 +36,12 @@ Add django-djeddit's URL patterns:
 
 Migrate models:
 
-.. code-block::
+.. code-block:: python
 
     python manage.py migrate djeddit
 
 Additional Options
-=====
+------------------
 
 By default the base template is djeddit/base.html
 

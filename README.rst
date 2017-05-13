@@ -59,7 +59,7 @@ Add django-djeddit's URL patterns:
 
 Migrate models:
 
-.. code-block::
+.. code-block:: python
 
     python manage.py migrate djeddit
 
