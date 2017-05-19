@@ -13,16 +13,16 @@
     <div class="row">
                 <div class="bs-callout">
                     <div class="bs-callout-heading">
-                        <h3 class="callout-title">
+                        <h3>
                             {% if thread.url %}
                                 <a href="{{ thread.url }}">{{ thread.title }}</a>
                             {% else %}
                                 {{ thread.title }}
                             {% endif %}
                         </h3>
-                        <h6 class="inline">
+                        <div class="text-muted inline">
                             Submitted by {% postUserName thread.op.created_by %} on {{ thread.op.created_on }}
-                        </h6>
+                        </div>
                     </div>
                     {% with thread.op as node %}
                         {% include 'djeddit/post_item.html' %}

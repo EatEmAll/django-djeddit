@@ -24,26 +24,19 @@
                 {% endif %}
             </div>
         {% endif %}
+        <ol class="breadcrumb">
+            <li><a href="{% url 'topics' %}">Home</a></li>
+            <li class="active">{{ topic.title }}</li>
+        </ol>
     </div>
 {% endblock %}
 {% block content %}
     <div class="col-md-8">
-        <table id="topics" class="table">
-            <thead>
-                <tr>
-                    <th class="col-md-10">Topic</th>
-                    <th class="col-md-2">Threads</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for topic in topics %}
-                    <tr>
-                        <td class="col-md-10"><a href="{% url 'topicPage' topic.getUrlTitle %}"><h4 class="inline">{{ topic.title }}</h4></a> </td>
-                        <td class="col-md-2"><h4><h5>{{ topic.getThreadCount }}</h5></h4></td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <ul class="list-group">
+            {% for topic in topics %}
+                {% include 'djeddit/topic_item.html' %}
+            {% endfor %}
+        </ul>
     </div>
 
 {% endblock %}

@@ -38,14 +38,15 @@ window.postFuncs = {
             else
                 $downvoteIcon.removeClass('color-primary');
             // update post's displayed score
-            $post.find('>.bs-callout-heading>.post-score').text(data.scoreStr);
+            $post.find('>.post-heading>.post-score').text(data.scoreStr);
             $post.find('>.bs-callout-main>.minicol>.post-score').text(data.score);
         })
     },
     toggleReplies: function (post) {
-        var $icon = $('#' + post + '>.bs-callout-heading>.fa.toggle-replies');
+        var $icon = $('#' + post + '>.post-heading>.fa.toggle-replies');
         $icon.toggleClass('fa-minus-square-o');
         $icon.toggleClass('fa-plus-square-o');
+        $('>.bs-callout-main', '#' + post).slideToggle('fast');
         $('.post-container', '#' + post).slideToggle('fast');
     }
 };

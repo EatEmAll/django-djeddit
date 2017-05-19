@@ -79,10 +79,10 @@ $border-color: #ddd;
   color: #5bc0de;
 }
 
-.bs-callout .bs-callout-heading {
+.bs-callout-heading {
+  margin-left: 15px;
   h3, h4, h5, h6 {
     display: inline;
-    margin-left: 5px;
   }
 }
 

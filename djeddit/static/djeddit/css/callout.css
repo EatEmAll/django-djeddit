@@ -57,9 +57,10 @@
 .bs-callout-info h4 {
   color: #5bc0de; }
 
-.bs-callout .bs-callout-heading h3, .bs-callout .bs-callout-heading h4, .bs-callout .bs-callout-heading h5, .bs-callout .bs-callout-heading h6 {
-  display: inline;
-  margin-left: 5px; }
+.bs-callout-heading {
+  margin-left: 15px; }
+  .bs-callout-heading h3, .bs-callout-heading h4, .bs-callout-heading h5, .bs-callout-heading h6 {
+    display: inline; }
 
 .minicol {
   float: left;

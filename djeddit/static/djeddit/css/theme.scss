@@ -25,6 +25,14 @@ footer {
   padding-top: 10px;
 }
 
+.wordwrap {
+   white-space: pre-wrap;      /* CSS3 */
+   white-space: -moz-pre-wrap; /* Firefox */
+   white-space: -pre-wrap;     /* Opera <7 */
+   white-space: -o-pre-wrap;   /* Opera 7 */
+   word-wrap: break-word;      /* IE */
+}
+
 .theme-dropdown .dropdown-menu {
   position: static;
   display: block;
@@ -48,6 +56,8 @@ footer {
 .color-primary{color: $brand-primary;}
 
 h6, .text-muted{line-height: 0;}
+
+.full-line{line-height: 1;}
 
 .count-box {
   @extend .hover-point;
@@ -79,7 +89,10 @@ h6, .text-muted{line-height: 0;}
   border-color: #ddd;
 }
 
-.post-content {margin: 12px 0;}
+.post-content {
+  @extend .wordwrap;
+  margin: 12px 0;
+}
 
 .fa-plus-square-o, .fa-minus-square-o {
   cursor: pointer;
@@ -97,4 +110,26 @@ h6, .text-muted{line-height: 0;}
   .fa-stack-1x {color: $gray;}
 }
 
-.list-group-item-main-col {padding-left: 0;}
+.post-heading {
+  h3, h4, h5, h6 {
+    display: inline;
+    margin-left: 5px;
+  }
+}
+
+.vertical-align {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+}
+
+//.list-group-item-main-col {padding-left: 0;}
+
+@media only screen and (min-width : 769px) {
+  .list-group-item-main-col {padding-left: 0;}
+}
+
+@media only screen and (max-width : 768px) {
+  .list-group-item-main-col {padding-left: 15px;}
+}

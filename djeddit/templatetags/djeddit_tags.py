@@ -99,4 +99,11 @@ def threadUrl(thread):
 def threadIconClass(thread):
     if thread.url:
         return 'fa-link'
-    return 'fa-file-text-o'
+    return 'fa-commenting-o'
+
+@register.simple_tag
+def firstLine(s, max_len=0):
+    line = s.split('\n')[0]
+    if max_len and len(line) > max_len:
+        return '%s...' % line[:max_len]
+    return line

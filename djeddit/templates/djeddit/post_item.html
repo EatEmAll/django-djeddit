@@ -3,11 +3,11 @@
 {% load mptt_tags %}
 
 <div class="row">
-    <div class="col-md-{% postLevelWidth thread node %}"></div>
-    <div class="col-md-{% postWidth thread node %}">
+    <div class="col-xs-{% postLevelWidth thread node %}"></div>
+    <div class="col-xs-{% postWidth thread node %}">
         <div id="{{ node.uid }}" class="post-container">
             {% if node != thread.op %}
-                <div class="bs-callout-heading">
+                <div class="post-heading">
                     <i class="fa fa-minus-square-o text-muted toggle-replies"
                        onclick="window.postFuncs.toggleReplies('{{ node.uid }}')"></i>
                     <h4 class="post-user">
@@ -40,7 +40,7 @@
                     {% endif %}
                 </div>
                 <div class="postcol">
-                    <p class="post-content">{{ node.content }}</p>
+                    <div class="post-content">{{ node.content }}</div>
                     <div class="btn-group btn-group-xs" role="group">
                         {% if node.created_by == user %}
                             <button onclick="window.postFuncs.toggleEditForm('{{ node.uid }}')" class="btn btn-default">

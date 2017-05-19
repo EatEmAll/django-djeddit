@@ -32,7 +32,7 @@ class NamedModel(models.Model):
 
 class Topic(NamedModel):
     alphanumeric = RegexValidator(r'^[0-9a-zA-Z ]*$', 'Only alphanumeric characters are allowed.')
-    title = models.CharField(max_length=120, blank=False, unique=True, validators=[alphanumeric])
+    title = models.CharField(max_length=20, blank=False, unique=True, validators=[alphanumeric])
 
     def getThreadCount(self):
         return Thread.objects.filter(topic=self).count()
@@ -49,7 +49,7 @@ class Topic(NamedModel):
 
 
 class Thread(NamedModel):
-    title = models.CharField(max_length=120, blank=False)
+    title = models.CharField(max_length=70, blank=False)
     url = models.URLField(max_length=120, blank=True, default='')
     views = models.IntegerField(blank=True, default=0)
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE)

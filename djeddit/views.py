@@ -27,7 +27,7 @@ def createThread(request, topic_title=None):
                     thread.topic = topic
                     thread.save()
                     post.thread = thread
-                    if request.user.is_authenticated():
+                    if request.user.is_authenticated:
                         post.created_by = request.user
                     post.save()
                     return redirect('threadPage', topic.getUrlTitle(), thread.id)
@@ -101,7 +101,7 @@ def replyPost(request, post_uid=''):
         if postForm.is_valid():
             post = postForm.save(commit=False)
             post.parent = repliedPost
-            if request.user.is_authenticated():
+            if request.user.is_authenticated:
                 post.created_by = request.user
             post.save()
             repliedPost.children.add(post)
