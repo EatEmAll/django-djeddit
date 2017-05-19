@@ -7,3 +7,16 @@ History
 ++++++++++++++++++
 
 * First release on PyPI.
+
+0.1.1 (2017-05-12)
+++++++++++++++++++
+
+* Added tests for models, forms, views
+* Urls that include topic titles with spaces in them don't work // fixed
+* Competability fixes for Django 1.9 and 1.8 and Python 2.7
+
+0.1.2 (2017-05-19)
+++++++++++++++++++
+
+* Updated documentation
+* client side fixes for added compatibility with mobile screen sizes
