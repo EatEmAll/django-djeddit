@@ -37,7 +37,7 @@ Add it and its dependencies to your `INSTALLED_APPS`:
         ...
         ]
 
-And djeddit_settings to context_processors:
+djeddit_settings to context_processors:
 
 .. code-block:: python
 
@@ -47,7 +47,7 @@ And djeddit_settings to context_processors:
         ...
     ]
 
-Add django-djeddit's URL patterns:
+jango-djeddit's URL patterns:
 
 .. code-block:: python
 
@@ -65,6 +65,8 @@ Migrate models:
 
 
 Create a topic:
+
+You can use New Topic dialog in /topics page if you're logged in as a superuser or you can create one in a python console:
 
 .. code-block:: python
 
