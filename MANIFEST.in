@@ -3,4 +3,4 @@ include CONTRIBUTING.rst
 include HISTORY.rst
 include LICENSE
 include README.rst
-recursive-include djeddit *.html *.png *.gif *js *.css *jpg *jpeg *svg *py
+recursive-include djeddit *.html *.png *.gif *js *.css *jpg *jpeg *svg *py *.otf *.eot *.svg *.ttf *.woff *.woff2

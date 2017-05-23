@@ -21,7 +21,7 @@ def get_version(*file_paths):
     raise RuntimeError('Unable to find version string.')
 
 
-version = get_version("djeddit", "__init__.py")
+version = '0.1.3'
 
 
 if sys.argv[-1] == 'publish':
