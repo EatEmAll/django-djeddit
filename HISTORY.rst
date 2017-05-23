@@ -20,3 +20,8 @@ History
 
 * Updated documentation
 * client side fixes for added compatibility with mobile screen sizes
+
+0.1.3 (2017-05-23)
+++++++++++++++++++
+
+* font-awsome fonts are not loading // fixed
