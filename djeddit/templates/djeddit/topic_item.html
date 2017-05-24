@@ -9,6 +9,10 @@
             <a href="{% url 'topicPage' topic.getUrlTitle %}">
                 <h4 class="inline">{{ topic.title }}</h4>
             </a>
+            <br>
+            <div class="text-muted inline full-line">
+                {% firstLine topic.description 90 %}
+            </div>
         </div>
         <div class="col-xs-1">
             <div class="count-box" onclick="window.location='{% url 'topicPage' topic.getUrlTitle %}'">

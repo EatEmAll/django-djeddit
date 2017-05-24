@@ -33,6 +33,7 @@ class NamedModel(models.Model):
 class Topic(NamedModel):
     alphanumeric = RegexValidator(r'^[0-9a-zA-Z ]*$', 'Only alphanumeric characters are allowed.')
     title = models.CharField(max_length=20, blank=False, unique=True, validators=[alphanumeric])
+    description = models.CharField(max_length=120, blank=True, default='')
 
     def getThreadCount(self):
         return Thread.objects.filter(topic=self).count()

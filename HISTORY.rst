@@ -25,3 +25,10 @@ History
 ++++++++++++++++++
 
 * font-awsome fonts are not loading // fixed
+
+0.1.4 (2017-05-24)
+++++++++++++++++++
+
+* Added description field for Topic
+* added description for topics in /topics page
+* updated migrations
