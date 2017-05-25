@@ -11,7 +11,13 @@ django-djeddit
 .. image:: https://codecov.io/gh/EatEmAll/django-djeddit/branch/master/graph/badge.svg
     :target: https://codecov.io/gh/EatEmAll/django-djeddit
 
-Bare bones Django forum application with Reddit like features
+Bare bones Django forum application with Reddit like features. 
+
+* `django-mptt library <https://github.com/django-mptt/django-mptt>`_ is used to display threads in a collapsable tree structure
+* compatible with mobile screen sizes (using `Bootstrap <https://github.com/twbs/bootstrap>`_)
+* voting functionality for threads & comments
+
+`django-registration-redux <https://github.com/macropin/django-registration>`_ is recommanded to go along with this app if you need out of the box user registration functionality.
 
 Documentation
 -------------
@@ -73,7 +79,7 @@ You can use New Topic dialog in /topics page if you're logged in as a superuser 
     from djeddit.models import Topic
     Topic.objects.create(title='Test Topic')
 
-Run the app and go to /topics page.
+Launch the app and go to /topics page.
 
 Features
 --------
