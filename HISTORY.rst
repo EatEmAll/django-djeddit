@@ -32,3 +32,8 @@ History
 * Added description field for Topic
 * added description for topics in /topics page
 * updated migrations
+
+0.1.5 (2017-05-26)
+++++++++++++++++++
+
+* moved base.html to root template dir

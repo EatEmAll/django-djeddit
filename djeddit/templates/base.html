@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8" />
+	{% load staticfiles %}
+    {% include 'djeddit/base_stylesheets.html' %}
+    <meta name="viewport" content = "width=device-width, initial-scale=1.0">
+</head>
+
+<body class="body">
+    <!-- Fixed navbar -->
+	<div id="wrap">
+        <nav class="navbar navbar-fixed-top">
+          <div class="container">
+            <div>
+              <ul class="nav navbar-nav navbar-right">
+                {% if user.is_authenticated %}
+                    <li><a href="/accounts/logout">Logout</a></li>
+                {% else %}
+                    <li><a href="/accounts/login">Login</a></li>
+                    <li><a href="/accounts/register">Register</a></li>
+                {% endif %}
+              </ul>
+            </div><!--/.nav-collapse -->
+          </div>
+        </nav>
+
+        <!-- Content -->
+        <div id="main" class="container theme-showcase" role="main">
+            {% block title %}{% endblock %}
+            <div class="row">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </div>
+	<footer>
+        <div class="navbar navbar-fixed-bottom">
+            <div class="container">
+                <p><a href="#" target="blank">Link1</a> | <a href="#" target="blank">Link2</a> | <a href="#" target="blank">Link3</a> | <a href="#" target="blank">Link4</a></p>
+            </div>
+        </div>
+	</footer>
+
+    	<!-- Bootstrap core JavaScript
+	================================================== -->
+    {% include 'djeddit/base_scripts.html' %}
+    {% block scripts %}{% endblock %}
+</body>
+
+<script type="text/javascript">
+    window.BASE_URL = "http://{{ request.get_host }}{% url 'home' %}"
+</script>
+</html>
