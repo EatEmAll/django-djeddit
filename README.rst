@@ -13,16 +13,24 @@ django-djeddit
 
 Bare bones Django forum application with Reddit like features. 
 
-* `django-mptt library <https://github.com/django-mptt/django-mptt>`_ is used to display threads in a collapsable tree structure
-* compatible with mobile screen sizes (using `Bootstrap <https://github.com/twbs/bootstrap>`_)
+* comments are displayed in a collapsable tree structure (using `django-mptt <https://github.com/django-mptt/django-mptt>`_)
 * voting functionality for threads & comments
+* compatible with mobile screen sizes (using `Bootstrap <https://github.com/twbs/bootstrap>`_)
 
 `django-registration-redux <https://github.com/macropin/django-registration>`_ is recommanded to go along with this app if you need out of the box user registration functionality.
 
-Documentation
--------------
+Working demo: http://eatemall.pythonanywhere.com/topics
 
-The full documentation is at https://django-djeddit.readthedocs.io.
+Documentation: https://django-djeddit.readthedocs.io.
+
+Screenshots
+-----------
+
+.. image:: https://raw.githubusercontent.com/EatEmAll/django-djeddit/master/media/Threads.jpg
+
+.. image:: https://raw.githubusercontent.com/EatEmAll/django-djeddit/master/media/User.jpg
+
+.. image:: https://raw.githubusercontent.com/EatEmAll/django-djeddit/master/media/Comments.jpg
 
 Quickstart
 ----------
