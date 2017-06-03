@@ -37,3 +37,9 @@ History
 ++++++++++++++++++
 
 * moved base.html to root template dir
+
+0.1.6 (2017-06-03)
+++++++++++++++++++
+
+* Admins can lock/unlock & delete threads, delete posts
+* Added description to Topic creation form
