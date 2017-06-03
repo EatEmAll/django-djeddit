@@ -7,11 +7,10 @@ from djeddit.forms import TopicForm, ThreadForm, PostForm
 from djeddit.models import Topic, Thread, Post, UserPostVote
 from djeddit.templatetags.djeddit_tags import postScore
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import user_passes_test
 
 
 # Create your views here.
-
-# @user_passes_test(lambda user: user.is_superuser)
 
 def createThread(request, topic_title=None):
     if topic_title:
@@ -39,6 +38,16 @@ def createThread(request, topic_title=None):
         except Topic.DoesNotExist:
             pass
     return redirect('topics')
+
+@user_passes_test(lambda u: u.is_superuser)
+def lockThread(request, thread_id):
+    try:
+        thread = Thread.objects.get(id=thread_id)
+    except Thread.DoesNotExist:
+        raise Http404
+    thread.locked = not thread.locked
+    thread.save()
+    return redirect('threadPage', thread.topic.getUrlTitle(), thread.id)
 
 
 def topicsPage(request):
@@ -95,6 +104,8 @@ def replyPost(request, post_uid=''):
         thread = repliedPost.getThread()
     except (Post.DoesNotExist, Thread.DoesNotExist):
         raise Http404
+    if thread.locked:
+        return HttpResponseForbidden()
     repliedUser = repliedPost.created_by.username if repliedPost.created_by else 'guest'
     if request.method == 'POST':
         postForm = PostForm(request.POST)
@@ -119,7 +130,7 @@ def editPost(request, post_uid=''):
         thread = post.getThread()
     except (Post.DoesNotExist, Thread.DoesNotExist):
         raise Http404
-    if request.user != post.created_by and not request.user.is_superuser:
+    if thread.locked or (request.user != post.created_by and not request.user.is_superuser):
         return HttpResponseForbidden()
     if request.method == 'POST':
         postForm = PostForm(request.POST, instance=post)
@@ -154,6 +165,21 @@ def votePost(request):
         return JsonResponse(dict(scoreStr=scoreStr, score=post.score))
     else:
         return HttpResponseForbidden()
+
+@user_passes_test(lambda u: u.is_superuser)
+def deletePost(request, post_uid):
+    try:
+        post = Post.objects.get(uid=post_uid)
+    except Post.DoesNotExist:
+        raise Http404
+    thread = post.getThread()
+    op = thread.op
+    post_uid = post.uid
+    post.delete()
+    if op.uid == post_uid:
+        return redirect('topicPage', thread.topic.getUrlTitle())
+    else:
+        return redirect('threadPage', thread.topic.getUrlTitle(), thread.id)
 
 
 def userSummary(request, username):

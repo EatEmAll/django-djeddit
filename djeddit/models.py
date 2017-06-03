@@ -55,6 +55,7 @@ class Thread(NamedModel):
     views = models.IntegerField(blank=True, default=0)
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
     op = models.ForeignKey('Post', related_name='+', on_delete=models.CASCADE)
+    locked = models.BooleanField(blank=True, default=False)
 
     def delete(self, *args, **kwargs):
         try:

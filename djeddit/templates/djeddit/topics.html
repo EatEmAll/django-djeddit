@@ -11,17 +11,19 @@
         {% endif %}
         </h2>
         {% if user.is_superuser %}
-            <div id="topic-form-wrapper" class="{% if not showForm %} hidden {% endif %}">
-                {% crispy topicForm %}
-                {% if topicForm.errors %}
-                    <ul class="help-block">
-                        {% for errors in topicForm.errors.values %}
-                            {% for error in errors %}
-                                <li>{{ error }}</li>
+            <div id="topic-form-wrapper" class="{% if not showForm %} hidden {% endif %} row">
+                <div class="col-sm-5">
+                    {% crispy topicForm %}
+                    {% if topicForm.errors %}
+                        <ul class="help-block">
+                            {% for errors in topicForm.errors.values %}
+                                {% for error in errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
                             {% endfor %}
-                        {% endfor %}
-                    </ul>
-                {% endif %}
+                        </ul>
+                    {% endif %}
+                </div>
             </div>
         {% endif %}
         <ol class="breadcrumb">

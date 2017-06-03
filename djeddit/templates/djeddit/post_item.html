@@ -43,17 +43,27 @@
                     <div class="post-content">{{ node.content }}</div>
                     <div class="btn-group btn-group-xs" role="group">
                         {% if node.created_by == user %}
-                            <button onclick="window.postFuncs.toggleEditForm('{{ node.uid }}')" class="btn btn-default">
+                            <button onclick="window.postFuncs.toggleEditForm('{{ node.uid }}')" class="btn btn-default" {% if thread.locked %}disabled{% endif %}>
                                 Edit
                             </button>
                         {% endif %}
-                        <button onclick="window.postFuncs.togglePostForm('{{ node.uid }}', this, 'reply_post/')" class="btn btn-default">
+                        <button onclick="window.postFuncs.togglePostForm('{{ node.uid }}', this, 'reply_post/')" class="btn btn-default" {% if thread.locked %}disabled{% endif %}>
                             Reply
                         </button>
                         {% if node.parent %}
                             <button onclick="location.href='#{{ node.parent.uid }}'" class="btn btn-default">
                                 Parent
                             </button>
+                        {% endif %}
+                        {% if user.is_superuser %}
+                            <button onclick="window.location = '{% url 'deletePost' node.uid %}';" class="btn btn-default">
+                                Delete
+                            </button>
+                            {% if node == thread.op %}
+                                <button onclick="window.location = '{% url 'lockThread' thread.id %}';" class="btn btn-default">
+                                    {% if not thread.locked %}Lock{% else %}Unlock{% endif %}
+                                </button>
+                            {% endif %}
                         {% endif %}
                     </div>
                 </div>
