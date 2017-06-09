@@ -4,7 +4,6 @@ if DJANGO_VERSION[:2] < (1, 10):
     from django.core.urlresolvers import reverse
 else:
     from django.urls import reverse
-from django.conf import settings
 from djeddit.utils.base_tests import TestCalls, createUser
 from djeddit.models import Topic, Thread, Post, gen_uuid, UserPostVote
 
@@ -74,10 +73,10 @@ class LockThreadTest(TestCase, TestCalls):
     def testRequireSuperUser(self):
         self._setup_user('not_admin', 'not_admin@example.com', password='pass')
         self.login()
-        self._test_call_view_redirects(self.url, settings.LOGIN_URL, startswith=True)
+        self._test_call_view_redirected_login(self.url)
 
     def testUnauthenticated(self):
-        self._test_call_view_redirects(self.url, settings.LOGIN_URL, startswith=True)
+        self._test_call_view_redirected_login(self.url)
 
 class TopicsPageTest(TestCase, TestCalls):
     def __init__(self, *args, **kwargs):
