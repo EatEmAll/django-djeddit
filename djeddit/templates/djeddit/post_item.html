@@ -42,8 +42,8 @@
                 <div class="postcol">
                     <div class="post-content">{{ node.content }}</div>
                     <div class="btn-group btn-group-xs" role="group">
-                        {% if node.created_by == user %}
-                            <button onclick="window.postFuncs.toggleEditForm('{{ node.uid }}')" class="btn btn-default" {% if thread.locked %}disabled{% endif %}>
+                        {% if node.created_by == user or user.is_superuser %}
+                            <button onclick="window.postFuncs.toggleEditForm('{{ node.uid }}', undefined, {% toggleHeader thread node user %})" class="btn btn-default" {% if thread.locked %}disabled{% endif %}>
                                 Edit
                             </button>
                         {% endif %}

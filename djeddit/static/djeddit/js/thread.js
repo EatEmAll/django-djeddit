@@ -11,10 +11,12 @@ window.postFuncs = {
         var $placeAfter = $('#' + post + '>.bs-callout-main');
         window.util.toggleForm(url, $placeAfter, {}, $(toggle));
     },
-    toggleEditForm: function (post, toggle) {
+    toggleEditForm: function (post, toggle, toggleHeader) {
         var $placeAfter = $('#' + post + '>.bs-callout-main');
         $placeAfter.toggle();
-        this.togglePostForm(post, toggle, 'edit_post/')
+        this.togglePostForm(post, toggle, 'edit_post/');
+        if (toggleHeader)
+            $('.bs-callout-heading').toggle();
     },
     votePost: function (post, upvoted, downvoted) {
         var vote = 0;

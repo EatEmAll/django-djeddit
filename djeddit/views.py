@@ -133,14 +133,21 @@ def editPost(request, post_uid=''):
     if thread.locked or (request.user != post.created_by and not request.user.is_superuser):
         return HttpResponseForbidden()
     if request.method == 'POST':
-        postForm = PostForm(request.POST, instance=post)
+        postForm = PostForm(request.POST, instance=post, prefix='post')
+        threadForm = ThreadForm(request.POST, instance=thread, prefix='thread')
         if postForm.is_valid():
             postForm.save()
+        if threadForm.is_valid():
+            threadForm.save()
         return redirect('threadPage', thread.topic.getUrlTitle(), thread.id)
     else:
-        postForm = PostForm(vars(post))
-        postForm.fields['content'].label = ''
-        context = dict(postForm=postForm, post_uid=post.uid)
+        postForm = PostForm(instance=post, prefix='post')
+        if request.user.is_superuser and thread.op == post:
+            threadForm = ThreadForm(instance=thread, prefix='thread')
+        else:
+            threadForm = None
+            postForm.fields['content'].label = ''
+        context = dict(postForm=postForm, threadForm=threadForm, post_uid=post.uid, thread=thread, post=post)
         return render(request, 'djeddit/edit_post.html', context)
 
 

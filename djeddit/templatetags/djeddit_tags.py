@@ -107,3 +107,7 @@ def firstLine(s, max_len=0):
     if max_len and len(line) > max_len:
         return '%s...' % line[:max_len]
     return line
+
+@register.simple_tag
+def toggleHeader(thread, post, user):
+    return 'true' if user.is_superuser and thread.op == post else 'false'

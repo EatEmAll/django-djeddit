@@ -4,6 +4,7 @@ if DJANGO_VERSION[:2] < (1, 10):
     from django.core.urlresolvers import reverse
 else:
     from django.urls import reverse
+from django.conf import settings
 from djeddit.utils.base_tests import TestCalls, createUser
 from djeddit.models import Topic, Thread, Post, gen_uuid, UserPostVote
 
@@ -60,23 +61,23 @@ class LockThreadTest(TestCase, TestCalls):
         replyUrl = reverse('replyPost', args=[self.thread.op.uid])
         self._test_call_view_code(replyUrl, 403, data=dict(content='replied'), post=True)
         editUrl = reverse('editPost', args=[self.thread.op.uid])
-        self._test_call_view_code(editUrl, 403, data=dict(content='edited'), post=True)
+        self._test_call_view_code(editUrl, 403, data={'post-content': 'edited'}, post=True)
         # unlock thread
         self._test_call_view_code(self.url, 302)
         # test thread is unlocked
         self._test_call_view_code(replyUrl, 302, data=dict(content='replied'), post=True)
         Post.objects.get(parent=self.thread.op, content='replied')  # assert object exists
-        self._test_call_view_code(editUrl, 302, data=dict(content='edited'), post=True)
+        self._test_call_view_code(editUrl, 302, data={'post-content': 'edited'}, post=True)
         self.thread.op.refresh_from_db()
         self.assertEqual(self.thread.op.content, 'edited')
 
     def testRequireSuperUser(self):
         self._setup_user('not_admin', 'not_admin@example.com', password='pass')
         self.login()
-        self._test_call_view_redirected_login(self.url)
+        self._test_call_view_redirects(self.url, settings.LOGIN_URL, startswith=True)
 
     def testUnauthenticated(self):
-        self._test_call_view_redirected_login(self.url)
+        self._test_call_view_redirects(self.url, settings.LOGIN_URL, startswith=True)
 
 class TopicsPageTest(TestCase, TestCalls):
     def __init__(self, *args, **kwargs):
@@ -183,7 +184,7 @@ class EditPostTest(TestCase, TestCalls):
 
     def testSubmit(self):
         self.login()
-        self._test_call_view_submit(self.url, code=302, data=dict(content='edited'))
+        self._test_call_view_submit(self.url, code=302, data={'post-content': 'edited'})
         self.post.refresh_from_db()
         self.assertEqual(self.post.content, 'edited')
 
@@ -205,10 +206,17 @@ class EditPostTest(TestCase, TestCalls):
         self._test_call_view_code(url, 403)
 
     def testEditAnotherPostAsSuperuser(self):
-        createUser(username='admin', email='admin@example.com', password='pass', is_superuser=True)
-        self.login(username='admin', password='pass')
+        self._login_as_admin()
         url = reverse('editPost', args=[str(self.User1Post.uid)])
-        self._test_call_view_submit(url, code=302, data=dict(content='edited'))
+        self._test_call_view_submit(url, code=302, data={'post-content': 'edited'})
+        self.User1Post.refresh_from_db()
+        self.assertEqual(self.User1Post.content, 'edited')
+
+    def testEditThread(self):
+        self._login_as_admin()
+        self._test_call_view_submit(self.url, code=302, data={'post-content': 'edited'})
+        self.post.refresh_from_db()
+        self.assertEqual(self.post.content, 'edited')
 
 
 class VotePostTest(TestCase, TestCalls):
@@ -248,8 +256,7 @@ class VotePostTest(TestCase, TestCalls):
         self._test_call_view_submit(self.url, code=403, data=dict(post=post.uid, vote=1))
 
     def testVoteOwnPostAsSuperuser(self):
-        admin = createUser(username='admin', email='admin@example.com', password='pass', is_superuser=True)
-        self.login(username='admin', password='pass')
+        admin = self._login_as_admin()
         post = Post.objects.create(created_by=admin)
         self._testVote(1, 1, 1, user=admin, post=post)
 

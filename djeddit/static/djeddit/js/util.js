@@ -9,13 +9,14 @@ window.util = {
   },
   toggleForm: function(url, $placeAfter, params, $toggle, onSuccessFunc) {
     if ($toggle === undefined || !$toggle.hasClass('clicked')) {
+        // load a form a given url
         $.get(url, params, function (data) {
             $placeAfter.after(data);
             if (typeof onSuccessFunc === 'function')
                 onSuccessFunc();
         });
     }
-    else
+    else // remove the form
         $placeAfter.next().remove();
     $toggle.toggleClass('clicked');
   }

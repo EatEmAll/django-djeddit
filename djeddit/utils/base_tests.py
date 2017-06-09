@@ -1,6 +1,5 @@
 from django.contrib.auth.models import User
 from django.conf import settings
-from six.moves.urllib.parse import urlparse
 
 
 def createUser(username, email, password, **kwargs):
@@ -27,6 +26,11 @@ class TestCalls(object):
         cls.username = username
         cls.password = password
 
+    def _login_as_admin(self, username='admin', email='admin@example.com', password='pass'):
+        admin = createUser(username, email, password, is_superuser=True)
+        self.login(username, password)
+        return admin
+
     def _test_call_view_loads(self, url, data=None):
         data = data or {}
         response = self.client.get(url, data)
@@ -44,12 +48,15 @@ class TestCalls(object):
         data = data or {}
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(urlparse(response.url).path, settings.LOGIN_URL)
+        self.assertTrue(response.url.startswith(settings.LOGIN_URL))
 
-    def _test_call_view_redirects(self, url, redirected_url, data=None):
+    def _test_call_view_redirects(self, url, redirected_url, data=None, startswith=False):
         data = data or {}
         response = self.client.get(url, data)
-        self.assertRedirects(response, redirected_url)
+        if startswith:
+            self.assertTrue(response.url.startswith(redirected_url))
+        else:
+            self.assertRedirects(response, redirected_url)
 
     def _test_call_view_code(self, url, code, data=None, post=False):
         data = data or {}
