@@ -43,3 +43,8 @@ History
 
 * Admins can lock/unlock & delete threads, delete posts
 * Added description to Topic creation form
+
+0.1.7 (2017-06-09)
+++++++++++++++++++
+
+* Admins can thread title, url, and post content
