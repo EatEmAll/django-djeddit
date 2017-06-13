@@ -41,7 +41,7 @@
                 </div>
                 <div class="postcol">
                     <div class="post-content">{{ node.content }}</div>
-                    <div class="btn-group btn-group-xs" role="group">
+                    <div class="btn-group btn-group-xs fixed-50" role="group">
                         {% if node.created_by == user or user.is_superuser %}
                             <button onclick="window.postFuncs.toggleEditForm('{{ node.uid }}', undefined, {% toggleHeader thread node user %})" class="btn btn-default" {% if thread.locked %}disabled{% endif %}>
                                 Edit
@@ -56,7 +56,7 @@
                             </button>
                         {% endif %}
                         {% if user.is_superuser %}
-                            <button onclick="window.location = '{% url 'deletePost' node.uid %}';" class="btn btn-default">
+                            <button onclick="window.postFuncs.deletePost('{{ node.uid }}', {% isOp thread node %})" class="btn btn-default">
                                 Delete
                             </button>
                             {% if node == thread.op %}

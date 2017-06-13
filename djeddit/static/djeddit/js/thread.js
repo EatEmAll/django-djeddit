@@ -50,5 +50,11 @@ window.postFuncs = {
         $icon.toggleClass('fa-plus-square-o');
         $('>.bs-callout-main', '#' + post).slideToggle('fast');
         $('.post-container', '#' + post).slideToggle('fast');
+    },
+    deletePost: function (post, show_confirm) {
+        if (!show_confirm || confirm('This will permanently delete this thread and all related comments')) {
+            window.location = window.util.getAbsoluteURL('delete_post/' + post);
+        }
+
     }
 };

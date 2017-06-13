@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+{% extends BASE_TEMPLATE %}
+{% load staticfiles %}
+{% load djeddit_tags %}
+{% block title %}
+    <h2>Users Page</h2>
+{% endblock %}
+{% block content %}
+    <div class="col-md-8">
+        <ul class="list-group">
+            {% for User in Users %}
+                <li class="list-group-item">
+                    <div class="row vertical-align">
+                        <div class="col-sm-1 hidden-xs col-icon hover-point" onclick="window.location='{% url 'userSummary' User.username %}'">
+                            <i class="fa fa-user-o fa-2x"></i>
+                        </div>
+                        <div class="col-sm-3 col-xs-6 list-group-item-main-col username-col">
+                            <a href="{% url 'userSummary' User.username %}"><h4 class="break-word">{{ User.username }}</h4></a>
+                        </div>
+                        <div class="col-sm-5 col-xs-6 status-col">
+                            <div class="full-line">
+                                <span class="text-muted hide-sm" style="margin-right: 10px">Status: </span>
+                                <select class="selectpicker user-status">
+                                    <option data-icon="glyphicon-ban-circle" value="banned" {% userStatusSelected User 'banned' %}>Banned</option>
+                                    <option data-icon="glyphicon-ok-sign" value="active" {% userStatusSelected User 'active' %}>Active</option>
+                                    <option data-icon="glyphicon-cog" value="admin" {% userStatusSelected User 'admin' %}>Admin</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-3 hidden-xs">
+                            <div class="count-box" onclick="window.location='{% url 'userReplies' User.username %}'">
+                                <div class="count-box-score text-muted">{{ User.rCount }}</div>
+                                <div class="count-box-context text-muted">Replies</div>
+                            </div>
+                            <div class="count-box" onclick="window.location='{% url 'userThreads' User.username %}'">
+                                <div class="count-box-score text-muted">{{ User.tCount }}</div>
+                                <div class="count-box-context text-muted">Threads</div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script type="text/javascript" src="{% static 'djeddit/js/util.js' %}"></script>
+    <script type="text/javascript" src="{% static 'djeddit/js/user.js' %}"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('.selectpicker.user-status').on('change', function () {
+                var username = $(this).closest('.status-col').siblings('.username-col').text().trim();
+                var status = this.value;
+                userFuncs.setUserStatus(username, status);
+            })
+        })
+    </script>
+{% endblock %}

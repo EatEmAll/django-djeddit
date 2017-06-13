@@ -47,4 +47,4 @@ History
 0.1.7 (2017-06-09)
 ++++++++++++++++++
 
-* Admins can thread title, url, and post content
+* Admins can edit thread title, url, and post content

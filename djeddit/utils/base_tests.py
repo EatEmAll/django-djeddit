@@ -3,7 +3,7 @@ from django.conf import settings
 from six.moves.urllib.parse import urlparse
 
 
-def createUser(username, email, password, **kwargs):
+def createUser(username='user', email='user@example.com', password='pass', **kwargs):
     user = User(username=username, email=email, **kwargs)
     user.set_password(password)
     user.save()
@@ -27,10 +27,17 @@ class TestCalls(object):
         cls.username = username
         cls.password = password
 
-    def _login_as_admin(self, username='admin', email='admin@example.com', password='pass'):
-        admin = createUser(username, email, password, is_superuser=True)
+    def _create_user_and_login(self, username='', email='', password='', create_admin=False):
+        if create_admin:
+            username = username or 'admin'
+            email = email or 'admin@example.com'
+        else:
+            username = username or 'user'
+            email = email or 'user@example.com'
+        password = password or 'pass'
+        user = createUser(username, email, password, is_superuser=create_admin)
         self.login(username, password)
-        return admin
+        return user
 
     def _test_call_view_loads(self, url, data=None):
         data = data or {}

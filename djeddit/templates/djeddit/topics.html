@@ -14,15 +14,6 @@
             <div id="topic-form-wrapper" class="{% if not showForm %} hidden {% endif %} row">
                 <div class="col-sm-5">
                     {% crispy topicForm %}
-                    {% if topicForm.errors %}
-                        <ul class="help-block">
-                            {% for errors in topicForm.errors.values %}
-                                {% for error in errors %}
-                                    <li>{{ error }}</li>
-                                {% endfor %}
-                            {% endfor %}
-                        </ul>
-                    {% endif %}
                 </div>
             </div>
         {% endif %}

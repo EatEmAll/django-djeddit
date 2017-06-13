@@ -19,7 +19,8 @@ from . import views
 urlpatterns = [
     url(r'^$', views.homePage, name='home'),
     url(r'^topics/?$', views.topicsPage, name='topics'),
-    url(r'^topics/(\w+)?/?$', views.topicPage, name='topicPage'),
+    url(r'^topics/(\w+)/?$', views.topicPage, name='topicPage'),
+    url(r'^topics/(\w+)/delete_topic/?$', views.deleteTopic, name='deleteTopic'),
     url(r'^topics/(\w+)/newthread/?$', views.createThread, name='createThread'),
     url(r'^lock_thread/(\d+)/?$', views.lockThread, name='lockThread'),
     url(r'^topics/(\w+)/(\d+)?/?$', views.threadPage, name='threadPage'),
@@ -30,4 +31,6 @@ urlpatterns = [
     url(r'^user/(.+)/summary/?$', views.userSummary, name='userSummary'),
     url(r'^user/(.+)/threads/?$', views.userThreadsPage, name='userThreads'),
     url(r'^user/(.+)/replies/?$', views.userRepliesPage, name='userReplies'),
+    url(r'^users/?$', views.usersPage, name='usersPage'),
+    url(r'^set_user_status/?$', views.setUserStatus, name='setUserStatus'),
 ]

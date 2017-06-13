@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
-from django.http import Http404, HttpResponseForbidden
+from django.http import Http404, HttpResponseForbidden, HttpResponseBadRequest
 
 from djeddit.forms import TopicForm, ThreadForm, PostForm
 from djeddit.models import Topic, Thread, Post, UserPostVote
@@ -39,6 +39,17 @@ def createThread(request, topic_title=None):
             pass
     return redirect('topics')
 
+
+@user_passes_test(lambda u: u.is_superuser)
+def deleteTopic(request, topic_title):
+    try:
+        topic = Topic.getTopic(topic_title)
+    except Topic.DoesNotExist:
+        raise Http404()
+    topic.delete()
+    return redirect('topics')
+
+
 @user_passes_test(lambda u: u.is_superuser)
 def lockThread(request, thread_id):
     try:
@@ -52,7 +63,6 @@ def lockThread(request, thread_id):
 
 def topicsPage(request):
     topics = Topic.objects.all()
-    showForm = False
     if request.method == 'POST':
         topicForm = TopicForm(request.POST)
         if topicForm.is_valid():
@@ -61,20 +71,31 @@ def topicsPage(request):
         showForm = True
     else:
         topicForm = TopicForm()
+        showForm = False
     context = dict(topics=topics, topicForm=topicForm, showForm=showForm)
     return render(request, 'djeddit/topics.html', context)
 
 
-def topicPage(request, topic_title=None):
-    if topic_title:
-        try:
-            topic = Topic.getTopic(topic_title)
-            threads = Thread.objects.filter(topic=topic)
-            context = dict(topic=topic, threads=threads, showCreatedBy=True, showTopic=False)
-            return render(request, 'djeddit/topic.html', context)
-        except Topic.DoesNotExist:
-            pass
-    return redirect('topics')
+def topicPage(request, topic_title):
+    try:
+        topic = Topic.getTopic(topic_title)
+    except Topic.DoesNotExist:
+        raise Http404()
+    # edit topic form
+    if request.method == 'POST':
+        if not request.user.is_superuser:
+            return HttpResponseForbidden()
+        form = TopicForm(request.POST, instance=topic)
+        if form.is_valid():
+            form.save()
+            return redirect('topicPage', topic.getUrlTitle())
+        showForm = True
+    else:
+        form = TopicForm(instance=topic)
+        showForm = False
+    threads = Thread.objects.filter(topic=topic)
+    context = dict(topic=topic, threads=threads, showCreatedBy=True, showTopic=False, topicForm=form, showForm=showForm)
+    return render(request, 'djeddit/topic.html', context)
 
 
 def threadPage(request, topic_title='', thread_id=''):
@@ -153,9 +174,12 @@ def editPost(request, post_uid=''):
 
 @login_required
 def votePost(request):
-    post_uid = request.POST['post']
-    vote_val = request.POST['vote']
-    post = Post.objects.get(uid=post_uid)
+    try:
+        post_uid = request.POST['post']
+        vote_val = request.POST['vote']
+        post = Post.objects.get(uid=post_uid)
+    except (KeyError, ValueError):
+        return HttpResponseBadRequest()
     if post.created_by != request.user or request.user.is_superuser:
         try:
             userPostVote = UserPostVote.objects.get(user=request.user, post=post)
@@ -172,6 +196,7 @@ def votePost(request):
         return JsonResponse(dict(scoreStr=scoreStr, score=post.score))
     else:
         return HttpResponseForbidden()
+
 
 @user_passes_test(lambda u: u.is_superuser)
 def deletePost(request, post_uid):
@@ -197,7 +222,7 @@ def userSummary(request, username):
     threads = Thread.objects.filter(op__created_by=user)
     for t in threads:
         t.modified_on = t.op.modified_on
-    replies = Post.objects.filter(created_by=user).exclude(uid__in=(t.op.uid for t in threads))
+    replies = Post.objects.filter(created_by=user).exclude(parent=None)
     context = dict(items=sorted(list(threads) + list(replies), key=lambda n: n.modified_on, reverse=True),
                    tCount=threads.count(),
                    rCount=replies.count(),
@@ -225,3 +250,40 @@ def userRepliesPage(request, username):
     replies = Post.objects.filter(created_by=user, parent__isnull=False)
     context = dict(replies=replies, pageUser=user)
     return render(request, 'djeddit/user_replies.html', context)
+
+
+@user_passes_test(lambda u: u.is_superuser)
+def usersPage(request):
+    """list users with their thread count and replies counts"""
+    users = User.objects.all()
+    for user in users:
+        user.tCount = Thread.objects.filter(op__created_by=user).count()
+        user.rCount = Post.objects.filter(created_by=user).exclude(parent=None).count()
+    return render(request, 'djeddit/users_page.html', dict(Users=users))
+
+
+@user_passes_test(lambda u: u.is_superuser)
+def setUserStatus(request):
+    """set user status to either active (is_active=True), banned(is_active=False), or admin(is_superuser=True)"""
+    try:
+        username = request.POST['username']
+        status = request.POST['status']
+    except KeyError:
+        return HttpResponseBadRequest()
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        raise Http404()
+    if status == 'active':
+        user.is_active = True
+        user.is_superuser = False
+    elif status == 'banned':
+        user.is_active = False
+        user.is_superuser = False
+    elif status == 'admin':
+        user.is_active = True
+        user.is_superuser = True
+    else:
+        return HttpResponseBadRequest()
+    user.save()
+    return HttpResponse()

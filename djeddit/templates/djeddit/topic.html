@@ -1,11 +1,28 @@
 <!DOCTYPE html>
 {% extends BASE_TEMPLATE %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
 {% load djeddit_tags %}
 {% block title %}
     <div class="container">
         <h2>{{ topic.title }}
-            <button class="btn btn-primary btn-xs" onclick="location.href='{% url 'createThread' topic.getUrlTitle %}'">New Thread</button>
+            <div class="btn-group btn-group-xs fixed-80" role="group">
+                {% if user.is_superuser %}
+                    <button class="btn btn-primary" onclick="$('#topic-form-wrapper').toggleClass('hidden')">Edit Topic</button>
+                    <button class="btn btn-primary" onclick="window.topicFuncs.deleteTopic('{{ topic.getUrlTitle }}')">Delete Topic</button>
+                {% endif %}
+                <button class="btn btn-primary" onclick="window.location='{% url 'createThread' topic.getUrlTitle %}'">New Thread</button>
+            </div>
         </h2>
+        <div class="text-muted full-line">{{ topic.description }}</div>
+        {% if user.is_superuser %}
+            <br>
+            <div id="topic-form-wrapper" class="{% if not showForm %} hidden {% endif %} row">
+                <div class="col-sm-5">
+                    {% crispy topicForm %}
+                </div>
+            </div>
+        {% endif %}
         <ol class="breadcrumb">
             <li><a href="{% url 'topics' %}">Home</a></li>
             <li class="active">{{ topic.title }}</li>
@@ -20,4 +37,8 @@
             {% endfor %}
         </ul>
     </div>
+{% endblock %}
+{% block scripts %}
+    <script type="text/javascript" src="{% static 'djeddit/js/util.js' %}"></script>
+    <script type="text/javascript" src="{% static 'djeddit/js/topic.js' %}"></script>
 {% endblock %}

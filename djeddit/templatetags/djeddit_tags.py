@@ -22,6 +22,10 @@ def getAmountContext(num, name, infix=''):
             return '{num} {infix} {name}'.format(num=num, infix=infix, name=name)
         return '1 {infix} {name}'.format(name=name, infix=infix)
 
+
+def getBoolean(condition):
+    return 'true' if condition else 'false'
+
 @register.simple_tag
 def getAmount(num, name, infix=''):
     amountContext = getAmountContext(num, name, infix=infix)
@@ -110,4 +114,17 @@ def firstLine(s, max_len=0):
 
 @register.simple_tag
 def toggleHeader(thread, post, user):
-    return 'true' if user.is_superuser and thread.op == post else 'false'
+    return getBoolean(user.is_superuser and thread.op == post)
+
+
+@register.simple_tag
+def isOp(thread, post):
+    return getBoolean(thread.op == post)
+
+@register.simple_tag
+def userStatusSelected(user, status):
+    if user.is_active:
+        if user.is_superuser:
+            return 'selected' if status == 'admin' else ''
+        return 'selected' if status == 'active' else ''
+    return 'selected' if status == 'banned' else ''
