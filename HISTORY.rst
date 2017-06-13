@@ -31,7 +31,6 @@ History
 
 * Added description field for Topic
 * added description for topics in /topics page
-* updated migrations
 
 0.1.5 (2017-05-26)
 ++++++++++++++++++
@@ -48,3 +47,10 @@ History
 ++++++++++++++++++
 
 * Admins can edit thread title, url, and post content
+
+0.1.8 (2017-06-14)
+++++++++++++++++++
+
+* added users page for admins
+* admins can ban users or promote them to admins
+* admins can edit & delete topics
