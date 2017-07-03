@@ -52,9 +52,27 @@ window.postFuncs = {
         $('.post-container', '#' + post).slideToggle('fast');
     },
     deletePost: function (post, show_confirm) {
-        if (!show_confirm || confirm('This will permanently delete this thread and all related comments')) {
+        if (!show_confirm || confirm('This will permanently delete this thread and all related comments'))
             window.location = window.util.getAbsoluteURL('delete_post/' + post);
-        }
-
+    },
+    getPostRepliesUids: function (post) {
+        // get uids of shown replies to a given post
+        var $baseElem = $('#comments-callout');
+        if (post)
+            $baseElem = $baseElem.find('#' + post);
+        var $replies = $baseElem.find('.post-container');
+        var $uids = $replies.map(function (i) {
+            return $replies[i].id;
+        });
+        return $uids.toArray();
+    },
+    loadAdditionalReplies: function ($elem, post, op) {
+        // load missing replies for a given post into $elem
+        var excluded = this.getPostRepliesUids(post);
+        var url = window.util.getAbsoluteURL('load_additional_replies');
+        var params = {post: post ? post : op, excluded: JSON.stringify(excluded)};
+        $.get(url, params, function (data) {
+            $elem.replaceWith(data);
+        });
     }
 };

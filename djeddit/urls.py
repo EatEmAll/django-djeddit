@@ -28,6 +28,7 @@ urlpatterns = [
     url(r'^edit_post/([\w\-]{36})?/?$', views.editPost, name='editPost'),
     url(r'^vote_post/?$', views.votePost, name='votePost'),
     url(r'^delete_post/([\w\-]{36})/?$', views.deletePost, name='deletePost'),
+    url(r'^load_additional_replies/?$', views.loadAdditionalReplies, name='loadAdditionalReplies'),
     url(r'^user/(.+)/summary/?$', views.userSummary, name='userSummary'),
     url(r'^user/(.+)/threads/?$', views.userThreadsPage, name='userThreads'),
     url(r'^user/(.+)/replies/?$', views.userRepliesPage, name='userReplies'),

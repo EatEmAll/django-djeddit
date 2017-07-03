@@ -6,7 +6,8 @@ if DJANGO_VERSION[:2] < (1, 10):
 else:
     from django.urls import reverse
 from djeddit.utils.base_tests import TestCalls, createUser
-from djeddit.models import Topic, Thread, Post, gen_uuid, UserPostVote
+from djeddit.models import Topic, Thread, Post, UserPostVote
+from djeddit.utils.utility_funcs import gen_uuid
 
 
 # Create your tests here.
@@ -21,7 +22,7 @@ class CreateThreadTest(TestCase, TestCalls):
     def setUpTestData(cls):
         cls._setup_user(username='user', email='user@example.com', password='pass')
         cls.topic = Topic.objects.create(title='Test Topic')
-        cls.url = reverse('createThread', args=[cls.topic.getUrlTitle()])
+        cls.url = reverse('createThread', args=[cls.topic.urlTitle])
 
     def testLoads(self):
         self._test_call_view_loads(self.url, {})
@@ -50,7 +51,7 @@ class DeleteTopicTest(TestCase, TestCalls):
     def setUpTestData(cls):
         cls._setup_user(username='admin', email='admin@example.com', password='pass', is_superuser=True)
         cls.topic = Topic.objects.create(title='Test Topic')
-        cls.url = reverse('deleteTopic', args=[cls.topic.getUrlTitle()])
+        cls.url = reverse('deleteTopic', args=[cls.topic.urlTitle])
 
     def testDeleteTopic(self):
         self.login()
@@ -129,7 +130,7 @@ class TopicPageTest(TestCase, TestCalls):
     def setUpTestData(cls):
         cls._setup_user(username='admin', email='admin@example.com', password='pass', is_superuser=True)
         cls.topic = Topic.objects.create(title='Test Topic')
-        cls.url = reverse('topicPage', args=[cls.topic.getUrlTitle()])
+        cls.url = reverse('topicPage', args=[cls.topic.urlTitle])
 
     def testLoads(self):
         self._test_call_view_loads(self.url)
@@ -170,19 +171,16 @@ class ThreadPageTest(TestCase, TestCalls):
         cls.thread = Thread.objects.create(title='Test_Thread', topic=cls.topic, op=Post.objects.create())
 
     def testLoads(self):
-        url = reverse('threadPage', args=[self.topic.getUrlTitle(), self.thread.id])
+        url = reverse('threadPage', args=[self.topic.urlTitle, self.thread.id])
         self._test_call_view_loads(url)
 
     def testWrongTopic(self):
         url = reverse('threadPage', args=['Fake_Topic', self.thread.id])
-        redirected_url = reverse('topics')
-        self._test_call_view_redirects(url, redirected_url)
+        self._test_call_view_code(url, 404)
 
     def testWrongThread(self):
-        url = reverse('threadPage', args=[self.topic.getUrlTitle(), self.thread.id + 1])
-        redirected_url = reverse('topics')
-        self._test_call_view_redirects(url, redirected_url)
-
+        url = reverse('threadPage', args=[self.topic.urlTitle, self.thread.id + 1])
+        self._test_call_view_code(url, 404)
 
 class ReplyPostTest(TestCase, TestCalls):
     def __init__(self, *args, **kwargs):
@@ -338,14 +336,14 @@ class DeletePostTest(TestCase, TestCalls):
 
     def testDeleteComment(self):
         self.login()
-        redirect_url = reverse('threadPage', args=[self.thread.topic.getUrlTitle(), self.thread.id])
+        redirect_url = reverse('threadPage', args=[self.thread.topic.urlTitle, self.thread.id])
         self._test_call_view_redirects(self.url, redirect_url)
         self.assertRaises(Post.DoesNotExist, self.comment.refresh_from_db)
 
     def testDeleteThread(self):
         self.login()
         url = reverse('deletePost', args=[self.thread.op.uid])
-        redirect_url = reverse('topicPage', args=[self.thread.topic.getUrlTitle()])
+        redirect_url = reverse('topicPage', args=[self.thread.topic.urlTitle])
         self._test_call_view_redirects(url, redirect_url)
         self.assertRaises(Post.DoesNotExist, self.thread.op.refresh_from_db)
         self.assertRaises(Thread.DoesNotExist, self.thread.refresh_from_db)

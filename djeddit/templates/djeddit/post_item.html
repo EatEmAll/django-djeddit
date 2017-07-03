@@ -29,7 +29,7 @@
             {% endif %}
             <div class="bs-callout-main">
                 <div class="minicol">
-                    {% if user.is_authenticated and user != node.created_by %}
+                    {% if user.is_authenticated and user != node.created_by or user.is_superuser %}
                         <div class="glyphicon glyphicon-chevron-up hover-point {% postVoteClicked user node True %} {% postVoteOP thread node %}"
                              onclick="window.postFuncs.votePost('{{ node.uid }}', !$(this).hasClass('color-primary'), false)"></div>
                         {% if node == thread.op %}
@@ -68,8 +68,19 @@
                     </div>
                 </div>
             </div>
-            {% if useRecurseTree and not node.is_leaf_node %}
+            {% if useRecursionTree and not node.is_leaf_node %}
                 {{ children }}
+                {% with node|missingRepliesCount:node.getChildrenList as missingCount %}
+                    {% if missingCount %}
+                        <div class="full-line additional-replies" style="margin-left:15px">
+                            <br>
+                            <a href="javascript:window.postFuncs.loadAdditionalReplies(
+                            $('#comments-callout').find('#' + '{{ node.uid }}').find('>.additional-replies'), '{{ node.uid }}')">
+                                Load {% getAmount missingCount 'comment' infix='more' %}
+                            </a>
+                        </div>
+                    {% endif %}
+            {% endwith %}
             {% endif %}
         </div>
     </div>

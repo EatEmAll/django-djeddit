@@ -18,7 +18,7 @@ class TopicModelTest(TestCase):
         self.assertEqual(self.topic.getThreadCount(), self.threadCount)
 
     def testGetUrlTitle(self):
-        self.assertEqual(self.topic.getUrlTitle(), 'Test_Topic')
+        self.assertEqual(self.topic.urlTitle, 'Test_Topic')
 
     def testGetTopic(self):
         self.assertEqual(Topic.getTopic('Test Topic'), self.topic)
@@ -49,5 +49,22 @@ class PostModelTest(TestCase):
     def testGetReplies(self):
         self.assertListEqual(self.replies, list(self.post.getReplies()))
 
-    def getThread(self):
-        self.assertEqual(self.thread, self.post.getThread())
+    def testGetThread(self):
+        self.assertEqual(self.thread, self.post.thread)
+
+    def testGetScore(self):
+        self.post.upvotes = 2
+        self.post.downvotes = 1
+        self.post.save()
+        self.post.refresh_from_db()
+        self.assertEqual(self.post.score, 1)
+
+    def testGetSortedRepliesByWsi(self):
+        for i, p in enumerate(self.replies):
+            p.upvotes = i
+            p.save()
+            self.replies[i].refresh_from_db()
+        self.assertEqual(tuple(self.post.getSortedReplies(by_wsi=True)), tuple(reversed(self.replies)))
+
+    def testGetSortedRepliesByDate(self):
+        self.assertEqual(tuple(self.post.getSortedReplies(by_wsi=False)), tuple(self.replies))

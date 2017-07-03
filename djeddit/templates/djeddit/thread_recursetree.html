@@ -1,0 +1,7 @@
+<!DOCTYPE html>
+{% load mptt_tags %}
+{% recursetree nodes %}
+    {% with True as useRecursionTree %}
+        {% include 'djeddit/post_item.html' %}
+    {% endwith %}
+{% endrecursetree %}

@@ -9,9 +9,9 @@
             <div class="btn-group btn-group-xs fixed-80" role="group">
                 {% if user.is_superuser %}
                     <button class="btn btn-primary" onclick="$('#topic-form-wrapper').toggleClass('hidden')">Edit Topic</button>
-                    <button class="btn btn-primary" onclick="window.topicFuncs.deleteTopic('{{ topic.getUrlTitle }}')">Delete Topic</button>
+                    <button class="btn btn-primary" onclick="window.topicFuncs.deleteTopic('{{ topic.urlTitle }}')">Delete Topic</button>
                 {% endif %}
-                <button class="btn btn-primary" onclick="window.location='{% url 'createThread' topic.getUrlTitle %}'">New Thread</button>
+                <button class="btn btn-primary" onclick="window.location='{% url 'createThread' topic.urlTitle %}'">New Thread</button>
             </div>
         </h2>
         <div class="text-muted full-line">{{ topic.description }}</div>

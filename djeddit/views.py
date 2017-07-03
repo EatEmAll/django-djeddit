@@ -8,6 +8,7 @@ from djeddit.models import Topic, Thread, Post, UserPostVote
 from djeddit.templatetags.djeddit_tags import postScore
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import user_passes_test
+import json
 
 
 # Create your views here.
@@ -25,11 +26,10 @@ def createThread(request, topic_title=None):
                     thread.op = post
                     thread.topic = topic
                     thread.save()
-                    post.thread = thread
                     if request.user.is_authenticated():
                         post.created_by = request.user
                     post.save()
-                    return redirect('threadPage', topic.getUrlTitle(), thread.id)
+                    return redirect('threadPage', topic.urlTitle, thread.id)
             else:
                 threadForm = ThreadForm(prefix='thread')
                 postForm = PostForm(prefix='post')
@@ -58,7 +58,7 @@ def lockThread(request, thread_id):
         raise Http404
     thread.locked = not thread.locked
     thread.save()
-    return redirect('threadPage', thread.topic.getUrlTitle(), thread.id)
+    return redirect('threadPage', thread.topic.urlTitle, thread.id)
 
 
 def topicsPage(request):
@@ -88,7 +88,7 @@ def topicPage(request, topic_title):
         form = TopicForm(request.POST, instance=topic)
         if form.is_valid():
             form.save()
-            return redirect('topicPage', topic.getUrlTitle())
+            return redirect('topicPage', topic.urlTitle)
         showForm = True
     else:
         form = TopicForm(instance=topic)
@@ -106,12 +106,10 @@ def threadPage(request, topic_title='', thread_id=''):
             if thread.topic.title == topic.title:
                 thread.views += 1
                 thread.save()
-                context = dict(thread=thread, nodes=thread.op.getReplies())
+                context = dict(thread=thread, nodes=thread.op.getSortedReplies())
                 return render(request, 'djeddit/thread.html', context)
         except (Topic.DoesNotExist, Thread.DoesNotExist):
-            pass
-    return redirect('topics')
-
+            raise Http404
 
 def homePage(request):
     # context = sorted(dict(request.GET, **request.POST).items())
@@ -122,7 +120,7 @@ def homePage(request):
 def replyPost(request, post_uid=''):
     try:
         repliedPost = Post.objects.get(uid=post_uid)
-        thread = repliedPost.getThread()
+        thread = repliedPost.thread
     except (Post.DoesNotExist, Thread.DoesNotExist):
         raise Http404
     if thread.locked:
@@ -137,7 +135,7 @@ def replyPost(request, post_uid=''):
                 post.created_by = request.user
             post.save()
             repliedPost.children.add(post)
-        return redirect('threadPage', thread.topic.getUrlTitle(), thread.id)
+        return redirect('threadPage', thread.topic.urlTitle, thread.id)
     else:
         postForm = PostForm()
         postForm.fields['content'].label = ''
@@ -148,7 +146,7 @@ def replyPost(request, post_uid=''):
 def editPost(request, post_uid=''):
     try:
         post = Post.objects.get(uid=post_uid)
-        thread = post.getThread()
+        thread = post.thread
     except (Post.DoesNotExist, Thread.DoesNotExist):
         raise Http404
     if thread.locked or (request.user != post.created_by and not request.user.is_superuser):
@@ -160,7 +158,7 @@ def editPost(request, post_uid=''):
             postForm.save()
         if threadForm.is_valid():
             threadForm.save()
-        return redirect('threadPage', thread.topic.getUrlTitle(), thread.id)
+        return redirect('threadPage', thread.topic.urlTitle, thread.id)
     else:
         postForm = PostForm(instance=post, prefix='post')
         if request.user.is_superuser and thread.op == post:
@@ -178,7 +176,7 @@ def votePost(request):
         post_uid = request.POST['post']
         vote_val = request.POST['vote']
         post = Post.objects.get(uid=post_uid)
-    except (KeyError, ValueError):
+    except (KeyError, ValueError, Post.DoesNotExist):
         return HttpResponseBadRequest()
     if post.created_by != request.user or request.user.is_superuser:
         try:
@@ -190,8 +188,22 @@ def votePost(request):
         except UserPostVote.DoesNotExist:
             userPostVote = UserPostVote.objects.create(user=request.user, post=post, val=max(min(int(vote_val), 1), -1))
             voteDelta = userPostVote.val
-        post.score += voteDelta
-        post.save()
+        if voteDelta:
+            if voteDelta > 0:
+                if userPostVote.val:
+                    post.upvotes += 1
+                    if voteDelta == 2:
+                        post.downvotes -= 1
+                else:
+                    post.downvotes -= 1
+            else:
+                if userPostVote.val:
+                    post.downvotes += 1
+                    if voteDelta == -2:
+                        post.upvotes -= 1
+                else:
+                    post.upvotes -= 1
+            post.save()
         scoreStr = postScore(post.score)
         return JsonResponse(dict(scoreStr=scoreStr, score=post.score))
     else:
@@ -204,14 +216,28 @@ def deletePost(request, post_uid):
         post = Post.objects.get(uid=post_uid)
     except Post.DoesNotExist:
         raise Http404
-    thread = post.getThread()
+    thread = post.thread
     op = thread.op
     post_uid = post.uid
     post.delete()
     if op.uid == post_uid:
-        return redirect('topicPage', thread.topic.getUrlTitle())
+        return redirect('topicPage', thread.topic.urlTitle)
     else:
-        return redirect('threadPage', thread.topic.getUrlTitle(), thread.id)
+        return redirect('threadPage', thread.topic.urlTitle, thread.id)
+
+
+def loadAdditionalReplies(request):
+    """load additional replies to a given post."""
+    try:
+        post_uid = request.GET['post']
+        # exclude all posts with these uids and their descendants
+        excluded_uids = json.loads(request.GET['excluded'])
+        post = Post.objects.get(uid=post_uid)
+    except (KeyError, ValueError, json.decoder.JSONDecodeError, Post.DoesNotExist):
+        return HttpResponseBadRequest()
+    replies = post.getSortedReplies(excluded=excluded_uids)
+    context = dict(thread=post.thread, nodes=replies)
+    return render(request, 'djeddit/thread_recursetree.html', context)
 
 
 def userSummary(request, username):

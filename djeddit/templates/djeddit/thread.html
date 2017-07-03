@@ -2,11 +2,10 @@
 {% extends BASE_TEMPLATE %}
 {% load staticfiles %}
 {% load djeddit_tags %}
-{% load mptt_tags %}
 {% block title %}
     <ol class="breadcrumb">
         <li><a href="{% url 'topics' %}">Home</a></li>
-        <li><a href="{% url 'topicPage' thread.topic.getUrlTitle %}">{{ thread.topic.title }}</a></li>
+        <li><a href="{% url 'topicPage' thread.topic.urlTitle %}">{{ thread.topic.title }}</a></li>
     </ol>
 {% endblock %}
 {% block content %}
@@ -30,11 +29,18 @@
                 </div>
         <div id="comments-callout" class="bs-callout">
             <h4 class="callout-title">{% getAmount nodes|length 'comment' %}</h4>
-            {% recursetree nodes %}
-                {% with True as useRecurseTree %}
-                    {% include 'djeddit/post_item.html' %}
-                {% endwith %}
-            {% endrecursetree %}
+            {% include 'djeddit/thread_recursetree.html' %}
+            {% with thread.op|missingRepliesCount:nodes as missingCount %}
+                {% if missingCount %}
+                    <div class="full-line additional-replies" style="margin-left:15px">
+                        <br>
+                        <a href="javascript:window.postFuncs.loadAdditionalReplies(
+                        $('#comments-callout').find('>.additional-replies'), null, '{{ thread.op.uid }}')">
+                            Load {% getAmount missingCount 'comment' infix='more' %}
+                        </a>
+                    </div>
+                {% endif %}
+            {% endwith %}
         </div>
     </div>
 {% endblock %}

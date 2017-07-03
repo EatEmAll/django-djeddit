@@ -14,13 +14,13 @@ register = template.Library()
 
 def getAmountContext(num, name, infix=''):
     if num:
-        if num > 1:
+        if abs(num) > 1:
             if name.endswith('y'):
                 name = '{name}ies'.format(name=name[:-1])
             else:
                 name += 's'
-            return '{num} {infix} {name}'.format(num=num, infix=infix, name=name)
-        return '1 {infix} {name}'.format(name=name, infix=infix)
+        amount_string = '{num} {infix} {name}'.format(num=num,  infix=infix, name=name)
+        return ' '.join(amount_string.split())
 
 
 def getBoolean(condition):
@@ -29,19 +29,20 @@ def getBoolean(condition):
 @register.simple_tag
 def getAmount(num, name, infix=''):
     amountContext = getAmountContext(num, name, infix=infix)
-    return amountContext if amountContext else 'no {infix} {name}s'.format(name=name, infix=infix)
+    if amountContext:
+        return amountContext
+    amount_string = 'no {infix} {name}s'.format(name=name, infix=infix)
+    return ' '.join(amount_string.split())
 
 
 @register.simple_tag
 def postUserName(created_by):
-    return created_by if created_by else 'guest'
+    return created_by or 'guest'
 
 
 @register.simple_tag
 def postScore(score):
-    if score:
-        return getAmountContext(score, 'point')
-    return 'no score'
+    return getAmountContext(score, 'point') if score else 'no score'
 
 
 @register.simple_tag
@@ -95,15 +96,11 @@ def postDate(dt, prefix=''):
 @register.simple_tag
 def threadUrl(thread):
     """:return thread url if it has one, otherwise forward to thread page"""
-    if thread.url:
-        return thread.url
-    return reverse('threadPage', args=(thread.topic.getUrlTitle(), thread.id))
+    return thread.url or reverse('threadPage', args=(thread.topic.urlTitle, thread.id))
 
 @register.simple_tag
 def threadIconClass(thread):
-    if thread.url:
-        return 'fa-link'
-    return 'fa-commenting-o'
+    return 'fa-link' if thread.url else 'fa-commenting-o'
 
 @register.simple_tag
 def firstLine(s, max_len=0):
@@ -128,3 +125,8 @@ def userStatusSelected(user, status):
             return 'selected' if status == 'admin' else ''
         return 'selected' if status == 'active' else ''
     return 'selected' if status == 'banned' else ''
+
+@register.filter
+def missingRepliesCount(post, shown_replies):
+    excluded_uids = [r.uid for r in shown_replies]
+    return post.getReplies(excluded=excluded_uids).count()
