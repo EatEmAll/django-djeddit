@@ -45,13 +45,13 @@ Additional Options
 
 By default the base template is djeddit/base.html
 
-You can change it to something by adding this to settings.py:
+You can change the default base template in settings.py:
 
 .. code-block:: python
 
     DJEDDIT_BASE_TEMPLATE = "path/to/template.html"
 
-In order for the base template to work properly with the app's templtes it should contain the following:
+In order for the base template to work properly with the app's templtes it needs to contain the following:
 
 within <head>...</head>:
 
@@ -70,4 +70,4 @@ within <body>...</body>:
     {% include 'djeddit/base_scripts.html' %}
     {% block scripts %}{% endblock %}
 
-You can look at the structue of djeddit/base.html for reference.
+You can use the structue of djeddit/base.html for reference.
