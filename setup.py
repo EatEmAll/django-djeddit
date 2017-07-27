@@ -21,7 +21,7 @@ def get_version(*file_paths):
     raise RuntimeError('Unable to find version string.')
 
 
-version = '0.1.8'
+version = '0.2'
 
 
 if sys.argv[-1] == 'publish':
