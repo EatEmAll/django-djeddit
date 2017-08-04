@@ -16,6 +16,10 @@
             <div>
               <ul class="nav navbar-nav navbar-right">
                 {% if user.is_authenticated %}
+                    <li><a href="{% url 'userSummary' user.username %}">Profile</a></li>
+                    {% if user.is_superuser %}
+                        <li><a href="{% url 'usersPage' %}">Users</a></li>
+                    {% endif %}
                     <li><a href="/accounts/logout">Logout</a></li>
                 {% else %}
                     <li><a href="/accounts/login">Login</a></li>
@@ -49,6 +53,6 @@
 </body>
 
 <script type="text/javascript">
-    window.BASE_URL = "http://{{ request.get_host }}{% url 'home' %}"
+    window.BASE_URL = "http://{{ request.get_host }}"
 </script>
 </html>
