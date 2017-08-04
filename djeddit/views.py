@@ -111,11 +111,6 @@ def threadPage(request, topic_title='', thread_id=''):
         except (Topic.DoesNotExist, Thread.DoesNotExist):
             raise Http404
 
-def homePage(request):
-    # context = sorted(dict(request.GET, **request.POST).items())
-    context = dict(request.GET, **request.POST)
-    return render(request, 'djeddit/home.html', context)
-
 
 def replyPost(request, post_uid=''):
     try:

@@ -15,15 +15,16 @@ Including another URLconf
 """
 from django.conf.urls import url
 from . import views
+from django.conf import settings
+
+if not hasattr(settings, 'TOPICS_URL'):
+    settings.TOPICS_URL = ''
+topic_prefix = '%s/' % settings.TOPICS_URL if settings.TOPICS_URL else ''
+
 
 urlpatterns = [
-    url(r'^$', views.homePage, name='home'),
-    url(r'^topics/?$', views.topicsPage, name='topics'),
-    url(r'^topics/(\w+)/?$', views.topicPage, name='topicPage'),
-    url(r'^topics/(\w+)/delete_topic/?$', views.deleteTopic, name='deleteTopic'),
-    url(r'^topics/(\w+)/newthread/?$', views.createThread, name='createThread'),
+    url(r'^%s$' % (topic_prefix + '/?' if topic_prefix else ''), views.topicsPage, name='topics'),
     url(r'^lock_thread/(\d+)/?$', views.lockThread, name='lockThread'),
-    url(r'^topics/(\w+)/(\d+)?/?$', views.threadPage, name='threadPage'),
     url(r'^reply_post/([\w\-]{36})?/?$', views.replyPost, name='replyPost'),
     url(r'^edit_post/([\w\-]{36})?/?$', views.editPost, name='editPost'),
     url(r'^vote_post/?$', views.votePost, name='votePost'),
@@ -34,4 +35,8 @@ urlpatterns = [
     url(r'^user/(.+)/replies/?$', views.userRepliesPage, name='userReplies'),
     url(r'^users/?$', views.usersPage, name='usersPage'),
     url(r'^set_user_status/?$', views.setUserStatus, name='setUserStatus'),
+    url(r'^%s(\w+)/?$' % topic_prefix, views.topicPage, name='topicPage'),
+    url(r'^%s(\w+)/delete_topic/?$' % topic_prefix, views.deleteTopic, name='deleteTopic'),
+    url(r'^%s(\w+)/newthread/?$' % topic_prefix, views.createThread, name='createThread'),
+    url(r'^%s(\w+)/(\d+)?/?$' % topic_prefix, views.threadPage, name='threadPage'),
 ]

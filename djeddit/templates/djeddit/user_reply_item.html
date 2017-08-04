@@ -2,7 +2,7 @@
 {% load djeddit_tags %}
 <li class="list-group-item">
     <div class="row vertical-align">
-        {% with reply.getThread as thread %}
+        {% with reply.thread as thread %}
             <div class="col-sm-1 hidden-xs col-icon hover-point" onclick="window.location='{% url 'threadPage' thread.topic.urlTitle thread.id %}/#{{ reply.uid }}'">
                 <span class="fa-stack fa-lg">
                     <i class="fa fa-circle fa-stack-2x"></i>
