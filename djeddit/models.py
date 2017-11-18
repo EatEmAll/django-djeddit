@@ -4,6 +4,8 @@ from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
 from djeddit.utils.utility_funcs import gen_uuid, wsi_confidence
 
+from slugify import slugify
+
 
 class IntegerRangeField(models.IntegerField):
     def __init__(self, verbose_name=None, name=None, min_value=None, max_value=None, **kwargs):
@@ -58,7 +60,13 @@ class Thread(NamedModel):
         except Post.DoesNotExist:
             pass
         super(Thread, self).delete(*args, **kwargs)
-
+    
+    def save(self, *args, **kwargs):
+        if len(slugify(self.title, to_lower=True )) >80:
+            self.slug = slugify(self.title.lower().replace('the', '').replace('a', '').replace('an', '').replace('what is', ''), to_lower=True, max_length=80)
+        else:
+            self.slug = slugify(self.title, to_lower=True, max_length=80)
+        super(Thread, self).save(*args, **kwargs)
 
 class Post(MPTTModel, NamedModel):
     uid = models.UUIDField(max_length=8, primary_key=True, default=gen_uuid, editable=False)
