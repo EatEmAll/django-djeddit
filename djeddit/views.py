@@ -98,12 +98,18 @@ def topicPage(request, topic_title):
     return render(request, 'djeddit/topic.html', context)
 
 
-def threadPage(request, topic_title='', thread_id=''):
+def threadPage(request, topic_title='', thread_id='', slug=''):
     if topic_title and thread_id:
         try:
             topic = Topic.getTopic(topic_title)
             thread = Thread.objects.get(id=thread_id)
-            if thread.topic.title == topic.title:
+            if thread.topic.urlTitle == topic_title:
+                if thread.slug and (slug != thread.slug):
+                    logging.debug('no slug match!')
+                    thread_url = thread.get_absolute_url()
+                #    if request.GET:
+                 #       thread_url += u'?' + urllib.urlencode(request.GET)
+                    return HttpResponseRedirect(thread_url)
                 thread.views += 1
                 thread.save()
                 context = dict(thread=thread, nodes=thread.op.getSortedReplies())
