@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
-from django.http import Http404, HttpResponseForbidden, HttpResponseBadRequest
+from django.http import Http404, HttpResponseForbidden, HttpResponseBadRequest, HttpResponseRedirect
 
 from djeddit.forms import TopicForm, ThreadForm, PostForm
 from djeddit.models import Topic, Thread, Post, UserPostVote
