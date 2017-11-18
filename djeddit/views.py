@@ -10,6 +10,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import user_passes_test
 import json
 
+import logging
+    
 
 # Create your views here.
 
