@@ -72,8 +72,10 @@ class Thread(NamedModel):
             return slugify(self.title, to_lower=True, max_length=80)
 
     def get_absolute_url(self):
-        print(self.url)
-        url = urlresolvers.reverse('threadSlugPage', args=[self.topic.urlTitle, self.id, self.slug])
+        if self.slug:
+            url = urlresolvers.reverse('threadSlugPage', args=[self.topic.urlTitle, self.id, self.slug])
+        else:
+            url = urlresolvers.reverse('threadPage', args=[self.topic.urlTitle, self.id])
         #url += '/'
         return url
 
