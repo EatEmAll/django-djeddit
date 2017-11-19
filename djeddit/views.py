@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import user_passes_test
 import json
 
 import logging
-    
+
 
 # Create your views here.
 
@@ -105,7 +105,7 @@ def threadPage(request, topic_title='', thread_id='', slug=''):
         try:
             topic = Topic.getTopic(topic_title)
             thread = Thread.objects.get(id=thread_id)
-            if thread.topic.urlTitle == topic_title:
+            if thread.topic.title == topic.title:
                 if thread.slug and (slug != thread.slug):
                     logging.debug('no slug match!')
                     thread_url = thread.get_absolute_url()
