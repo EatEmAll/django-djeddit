@@ -71,3 +71,35 @@ within <body>...</body>:
     {% block scripts %}{% endblock %}
 
 You can use the structue of djeddit/base.html for reference.
+
+SiteMap
+-------
+
+If you'd like djeddit to generate sitemaps for SEO you can follow these steps.
+Djeddit comes with a sitemaps.py file included and you just have to enable it.
+
+Add the following apps to your installed apps if they are not already there
+
+.. code-block:: python
+
+    'django.contrib.sites',
+    'django.contrib.sitemaps',
+
+Create the sitemaps dictionary with the djeddit sitemap import
+
+.. code-block:: python
+
+    from djeddit.sitemaps import ThreadSitemap
+
+    sitemaps = {
+        'djeddit' : ThreadSitemap
+    }
+Now add the following to your `urlpatterns`
+
+.. code-block:: python
+    
+    url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
+    
+Run migrations and run server
+
+If you visit `sitemap.xml` on your site you should have a working sitemap for djeddit threads.
