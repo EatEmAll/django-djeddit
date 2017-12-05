@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
-from django.http import Http404, HttpResponseForbidden, HttpResponseBadRequest
+from django.http import Http404, HttpResponseForbidden, HttpResponseBadRequest, HttpResponseRedirect
 
 from djeddit.forms import TopicForm, ThreadForm, PostForm
 from djeddit.models import Topic, Thread, Post, UserPostVote
@@ -9,6 +9,8 @@ from djeddit.templatetags.djeddit_tags import postScore
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import user_passes_test
 import json
+
+import logging
 
 
 # Create your views here.
@@ -98,12 +100,18 @@ def topicPage(request, topic_title):
     return render(request, 'djeddit/topic.html', context)
 
 
-def threadPage(request, topic_title='', thread_id=''):
+def threadPage(request, topic_title='', thread_id='', slug=''):
     if topic_title and thread_id:
         try:
             topic = Topic.getTopic(topic_title)
             thread = Thread.objects.get(id=thread_id)
             if thread.topic.title == topic.title:
+                if thread.slug and (slug != thread.slug):
+                    logging.debug('no slug match!')
+                    thread_url = thread.get_absolute_url()
+                #    if request.GET:
+                 #       thread_url += u'?' + urllib.urlencode(request.GET)
+                    return HttpResponseRedirect(thread_url)
                 thread.views += 1
                 thread.save()
                 context = dict(thread=thread, nodes=thread.op.getSortedReplies())

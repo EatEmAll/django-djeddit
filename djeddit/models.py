@@ -1,8 +1,13 @@
 from django.conf import settings
+from django.core import urlresolvers
 from django.core.validators import RegexValidator
 from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
 from djeddit.utils.utility_funcs import gen_uuid, wsi_confidence
+
+from django.utils.http import urlquote as django_urlquote
+
+from slugify import slugify
 
 
 class IntegerRangeField(models.IntegerField):
@@ -46,6 +51,7 @@ class Topic(NamedModel):
 
 class Thread(NamedModel):
     title = models.CharField(max_length=70, blank=False)
+    slug = models.SlugField(unique=False, null=True)
     url = models.URLField(max_length=120, blank=True, default='')
     views = models.IntegerField(blank=True, default=0)
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
@@ -58,6 +64,24 @@ class Thread(NamedModel):
         except Post.DoesNotExist:
             pass
         super(Thread, self).delete(*args, **kwargs)
+
+    def get_slug(self, title):
+        if len(slugify(self.title, to_lower=True)) > 80:
+            return slugify(self.title.lower().replace('the', '').replace('a', '').replace('an', '').replace('what is', ''), to_lower=True, max_length=80)
+        else:
+            return slugify(self.title, to_lower=True, max_length=80)
+
+    def get_absolute_url(self):
+        if self.slug:
+            url = urlresolvers.reverse('threadSlugPage', args=[self.topic.urlTitle, self.id, self.slug])
+        else:
+            url = urlresolvers.reverse('threadPage', args=[self.topic.urlTitle, self.id])
+        #url += '/'
+        return url
+
+    def save(self, *args, **kwargs):
+        self.slug =self.get_slug(self.title)
+        super(Thread, self).save(*args, **kwargs)
 
 
 class Post(MPTTModel, NamedModel):
