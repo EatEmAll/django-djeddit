@@ -60,7 +60,7 @@ class TestCalls(object):
 
     def _test_call_view_redirects(self, url, redirected_url, data=None):
         data = data or {}
-        response = self.client.get(url, data)
+        response = self.client.get(url, data, follow=True)
         self.assertRedirects(response, redirected_url)
 
     def _test_call_view_code(self, url, code, data=None, post=False):

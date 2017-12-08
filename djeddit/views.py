@@ -31,7 +31,7 @@ def createThread(request, topic_title=None):
                     if request.user.is_authenticated():
                         post.created_by = request.user
                     post.save()
-                    return redirect('threadPage', topic.urlTitle, thread.id)
+                    return HttpResponseRedirect(thread.relativeUrl)
             else:
                 threadForm = ThreadForm(prefix='thread')
                 postForm = PostForm(prefix='post')
@@ -60,7 +60,7 @@ def lockThread(request, thread_id):
         raise Http404
     thread.locked = not thread.locked
     thread.save()
-    return redirect('threadPage', thread.topic.urlTitle, thread.id)
+    return HttpResponseRedirect(thread.relativeUrl)
 
 
 def topicsPage(request):
@@ -105,19 +105,16 @@ def threadPage(request, topic_title='', thread_id='', slug=''):
         try:
             topic = Topic.getTopic(topic_title)
             thread = Thread.objects.get(id=thread_id)
-            if thread.topic.title == topic.title:
-                if thread.slug and (slug != thread.slug):
-                    logging.debug('no slug match!')
-                    thread_url = thread.get_absolute_url()
-                #    if request.GET:
-                 #       thread_url += u'?' + urllib.urlencode(request.GET)
-                    return HttpResponseRedirect(thread_url)
+            if thread.topic == topic:
+                if not slug or slug != thread.slug:
+                    return HttpResponseRedirect(thread.relativeUrl)
                 thread.views += 1
                 thread.save()
                 context = dict(thread=thread, nodes=thread.op.getSortedReplies())
                 return render(request, 'djeddit/thread.html', context)
         except (Topic.DoesNotExist, Thread.DoesNotExist):
-            raise Http404
+            pass
+    raise Http404
 
 
 def replyPost(request, post_uid=''):
@@ -138,7 +135,7 @@ def replyPost(request, post_uid=''):
                 post.created_by = request.user
             post.save()
             repliedPost.children.add(post)
-        return redirect('threadPage', thread.topic.urlTitle, thread.id)
+        return HttpResponseRedirect(thread.relativeUrl)
     else:
         postForm = PostForm()
         postForm.fields['content'].label = ''
@@ -161,7 +158,7 @@ def editPost(request, post_uid=''):
             postForm.save()
         if threadForm.is_valid():
             threadForm.save()
-        return redirect('threadPage', thread.topic.urlTitle, thread.id)
+        return HttpResponseRedirect(thread.relativeUrl)
     else:
         postForm = PostForm(instance=post, prefix='post')
         if request.user.is_superuser and thread.op == post:
@@ -226,7 +223,7 @@ def deletePost(request, post_uid):
     if op.uid == post_uid:
         return redirect('topicPage', thread.topic.urlTitle)
     else:
-        return redirect('threadPage', thread.topic.urlTitle, thread.id)
+        return HttpResponseRedirect(thread.relativeUrl)
 
 
 def loadAdditionalReplies(request):

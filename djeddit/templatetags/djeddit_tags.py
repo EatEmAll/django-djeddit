@@ -96,7 +96,11 @@ def postDate(dt, prefix=''):
 @register.simple_tag
 def threadUrl(thread):
     """:return thread url if it has one, otherwise forward to thread page"""
-    return thread.url or reverse('threadPage', args=(thread.topic.urlTitle, thread.id))
+    return thread.url or thread.relativeUrl
+
+@register.simple_tag
+def postUrl(post):
+    return '%s/#%s' % (post.thread.relativeUrl, post.uid)
 
 @register.simple_tag
 def threadIconClass(thread):

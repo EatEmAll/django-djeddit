@@ -1,12 +1,13 @@
 from django.conf import settings
-from django.core import urlresolvers
+from django import VERSION as DJANGO_VERSION
+if DJANGO_VERSION[:2] < (1, 10):
+    from django.core.urlresolvers import reverse
+else:
+    from django.urls import reverse
 from django.core.validators import RegexValidator
 from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
 from djeddit.utils.utility_funcs import gen_uuid, wsi_confidence
-
-from django.utils.http import urlquote as django_urlquote
-
 from slugify import slugify
 
 
@@ -65,22 +66,16 @@ class Thread(NamedModel):
             pass
         super(Thread, self).delete(*args, **kwargs)
 
-    def get_slug(self, title):
-        if len(slugify(self.title, to_lower=True)) > 80:
-            return slugify(self.title.lower().replace('the', '').replace('a', '').replace('an', '').replace('what is', ''), to_lower=True, max_length=80)
-        else:
-            return slugify(self.title, to_lower=True, max_length=80)
+    def genSlug(self):
+        slug = slugify(self.title, to_lower=True, max_length=80)
+        return slug
 
-    def get_absolute_url(self):
-        if self.slug:
-            url = urlresolvers.reverse('threadSlugPage', args=[self.topic.urlTitle, self.id, self.slug])
-        else:
-            url = urlresolvers.reverse('threadPage', args=[self.topic.urlTitle, self.id])
-        #url += '/'
-        return url
+    @property
+    def relativeUrl(self):
+        return reverse('threadPage', args=[self.topic.urlTitle, self.id, self.slug])
 
     def save(self, *args, **kwargs):
-        self.slug =self.get_slug(self.title)
+        self.slug = self.genSlug()
         super(Thread, self).save(*args, **kwargs)
 
 
@@ -111,7 +106,7 @@ class Post(MPTTModel, NamedModel):
         return voteSetter
 
     @property
-    def thread(self):
+    def thread(self): # TODO: thread should be stored in Post
         post = self
         while post.parent:
             post = post.parent

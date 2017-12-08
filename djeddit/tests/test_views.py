@@ -25,7 +25,7 @@ class CreateThreadTest(TestCase, TestCalls):
         cls.url = reverse('createThread', args=[cls.topic.urlTitle])
 
     def testLoads(self):
-        self._test_call_view_loads(self.url, {})
+        self._test_call_view_loads(self.url)
 
     def _testSubmit(self, data):
         self._test_call_view_submit(self.url, code=302, data=data)
@@ -171,16 +171,16 @@ class ThreadPageTest(TestCase, TestCalls):
         cls.thread = Thread.objects.create(title='Test_Thread', topic=cls.topic, op=Post.objects.create())
 
     def testLoads(self):
-        url = reverse('threadPage', args=[self.topic.urlTitle, self.thread.id])
-        self._test_call_view_loads(url)
+        self._test_call_view_loads(self.thread.relativeUrl)
 
     def testWrongTopic(self):
-        url = reverse('threadPage', args=['Fake_Topic', self.thread.id])
+        url = reverse('threadPage', args=['Fake_Topic', self.thread.id, 'Fake-Topic'])
         self._test_call_view_code(url, 404)
 
     def testWrongThread(self):
-        url = reverse('threadPage', args=[self.topic.urlTitle, self.thread.id + 1])
+        url = reverse('threadPage', args=[self.topic.urlTitle, self.thread.id + 1, 'Fake-Topic'])
         self._test_call_view_code(url, 404)
+
 
 class ReplyPostTest(TestCase, TestCalls):
     def __init__(self, *args, **kwargs):
@@ -336,8 +336,7 @@ class DeletePostTest(TestCase, TestCalls):
 
     def testDeleteComment(self):
         self.login()
-        redirect_url = reverse('threadPage', args=[self.thread.topic.urlTitle, self.thread.id])
-        self._test_call_view_redirects(self.url, redirect_url)
+        self._test_call_view_redirects(self.url, self.thread.relativeUrl)
         self.assertRaises(Post.DoesNotExist, self.comment.refresh_from_db)
 
     def testDeleteThread(self):
