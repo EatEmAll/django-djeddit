@@ -59,6 +59,10 @@ class Thread(NamedModel):
     op = models.ForeignKey('Post', related_name='+', on_delete=models.CASCADE)
     locked = models.BooleanField(blank=True, default=False)
 
+    def save(self, *args, **kwargs):
+        self.slug = self._genSlug()
+        super(Thread, self).save(*args, **kwargs)
+
     def delete(self, *args, **kwargs):
         try:
             self.op.delete()
@@ -66,17 +70,13 @@ class Thread(NamedModel):
             pass
         super(Thread, self).delete(*args, **kwargs)
 
-    def genSlug(self):
+    def _genSlug(self):
         slug = slugify(self.title, to_lower=True, max_length=80)
         return slug
 
     @property
     def relativeUrl(self):
         return reverse('threadPage', args=[self.topic.urlTitle, self.id, self.slug])
-
-    def save(self, *args, **kwargs):
-        self.slug = self.genSlug()
-        super(Thread, self).save(*args, **kwargs)
 
 
 class Post(MPTTModel, NamedModel):

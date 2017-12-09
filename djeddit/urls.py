@@ -38,5 +38,5 @@ urlpatterns = [
     url(r'^%s(\w+)/?$' % topic_prefix, views.topicPage, name='topicPage'),
     url(r'^%s(\w+)/delete_topic/?$' % topic_prefix, views.deleteTopic, name='deleteTopic'),
     url(r'^%s(\w+)/newthread/?$' % topic_prefix, views.createThread, name='createThread'),
-    url(r'^%s(?P<topic_title>\w+)/(?P<thread_id>\d+)/?(?P<slug>.*)?/?$' % topic_prefix, views.threadPage, name='threadPage'),
+    url(r'^%s(?P<topic_title>\w+)/(?P<thread_id>\d+)/(?P<slug>[a-z0-9\-]+)?/?$' % topic_prefix, views.threadPage, name='threadPage'),
 ]

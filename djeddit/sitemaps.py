@@ -2,6 +2,7 @@ from django.contrib.sitemaps import Sitemap
 
 from .models import Thread
 
+
 class ThreadSitemap(Sitemap):
     changefreq = "daily"
     priority = 0.7

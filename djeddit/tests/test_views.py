@@ -174,11 +174,11 @@ class ThreadPageTest(TestCase, TestCalls):
         self._test_call_view_loads(self.thread.relativeUrl)
 
     def testWrongTopic(self):
-        url = reverse('threadPage', args=['Fake_Topic', self.thread.id, 'Fake-Topic'])
+        url = reverse('threadPage', args=['Fake_Topic', self.thread.id, 'fake-topic'])
         self._test_call_view_code(url, 404)
 
     def testWrongThread(self):
-        url = reverse('threadPage', args=[self.topic.urlTitle, self.thread.id + 1, 'Fake-Topic'])
+        url = reverse('threadPage', args=[self.topic.urlTitle, self.thread.id + 1, 'fake-topic'])
         self._test_call_view_code(url, 404)
 
 

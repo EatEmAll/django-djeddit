@@ -1,5 +1,12 @@
+from django import VERSION as DJANGO_VERSION
 from django.test import TestCase
+
+if DJANGO_VERSION[:2] < (1, 10):
+    from django.core.urlresolvers import reverse
+else:
+    from django.urls import reverse
 from djeddit.models import Topic, Thread, Post
+from slugify import slugify
 
 # Create your tests here.
 
@@ -17,7 +24,7 @@ class TopicModelTest(TestCase):
     def testThreadCount(self):
         self.assertEqual(self.topic.getThreadCount(), self.threadCount)
 
-    def testGetUrlTitle(self):
+    def testUrlTitle(self):
         self.assertEqual(self.topic.urlTitle, 'Test_Topic')
 
     def testGetTopic(self):
@@ -28,14 +35,23 @@ class TopicModelTest(TestCase):
 class ThreadModelTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.thread = Thread.objects.create(title='Test Thread',
-                                           topic=Topic.objects.create(title='Test Topic'),
-                                           op=Post.objects.create())
+        cls.topic = Topic.objects.create(title='Test Topic')
+        cls.thread = Thread.objects.create(title='Test Thread', topic=cls.topic, op=Post.objects.create())
+
+    def testThreadSlugGeneration(self):
+        thread = Thread.objects.create(title='Slug Test 1!', topic=self.topic, op=Post.objects.create())
+        slug = slugify(thread.title, to_lower=True, max_length=80)
+        self.assertEqual(thread.slug, slug)
+
+    def testThreadRelativeUrl(self):
+        threadPageUrl = reverse('threadPage', args=[self.thread.topic.urlTitle, self.thread.id, self.thread.slug])
+        self.assertEqual(self.thread.relativeUrl, threadPageUrl)
 
     def testThreadDelete(self):
-        uid = self.thread.op.uid
-        self.thread.delete()
-        self.assertRaises(Thread.DoesNotExist, Thread.objects.get, title='Test Thread')
+        thread = Thread.objects.create(title='temp thread', topic=self.topic, op=Post.objects.create())
+        uid = thread.op.uid
+        thread.delete()
+        self.assertRaises(Thread.DoesNotExist, Thread.objects.get, title=thread.title)
         self.assertRaises(Post.DoesNotExist, Post.objects.get, uid=uid)
 
 

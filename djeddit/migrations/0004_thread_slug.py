@@ -3,10 +3,10 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
+from djeddit.models import Thread
 
 
 def genSlugs(apps, schema_editor):
-    Thread = apps.get_model('djeddit', 'Thread')
     for t in Thread.objects.all().iterator():
         t.save()
 
