@@ -1,11 +1,23 @@
+from django import VERSION as DJANGO_VERSION
 from django.conf import settings
-from django.core import urlresolvers
+
+if DJANGO_VERSION[:2] < (1, 10):
+    from django.core.urlresolvers import reverse
+else:
+    from django.urls import reverse
+
 from django.core.validators import RegexValidator
 from django.db import models
-from mptt.models import MPTTModel, TreeForeignKey
-from djeddit.utils.utility_funcs import gen_uuid, wsi_confidence
+from django.db.models.manager import Manager
 
+from django.conf import settings
+from django.utils.translation import gettext as _
+
+from mptt.models import MPTTModel, TreeForeignKey
+
+from djeddit.utils.utility_funcs import gen_uuid, wsi_confidence
 from django.utils.http import urlquote as django_urlquote
+from django.utils.encoding import python_2_unicode_compatible
 
 from slugify import slugify
 
@@ -73,9 +85,9 @@ class Thread(NamedModel):
 
     def get_absolute_url(self):
         if self.slug:
-            url = urlresolvers.reverse('threadSlugPage', args=[self.topic.urlTitle, self.id, self.slug])
+            url = reverse('threadSlugPage', args=[self.topic.urlTitle, self.id, self.slug])
         else:
-            url = urlresolvers.reverse('threadPage', args=[self.topic.urlTitle, self.id])
+            url = reverse('threadPage', args=[self.topic.urlTitle, self.id])
         #url += '/'
         return url
 
