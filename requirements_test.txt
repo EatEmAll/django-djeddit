@@ -7,3 +7,4 @@ django-model-utils>=2.0
 six>=1.10.0
 
 # Additional test requirements go here
+awesome-slugify
