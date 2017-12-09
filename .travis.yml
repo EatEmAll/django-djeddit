@@ -5,6 +5,8 @@ language: python
 python:
   - "3.5"
 
+cache: pip
+
 matrix:
   include:
   - python: "3.5"
@@ -37,15 +39,13 @@ matrix:
   - python: "2.7"
     env: TOXENV=py27-django-110
 
-matrix:
-  fast_finish: true
-
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
-install: pip install -r requirements.txt
-install: pip install -r requirements_test.txt
+install:
+  - pip install -r requirements.txt
+  - pip install -r requirements_test.txt
 
 # command to run tests using coverage, e.g. python setup.py test
-script: tox -e $TOX_ENV
+script: tox -e TOXENV
 
 after_success:
-  - codecov -e TOX_ENV
+  - codecov -e TOXENV
