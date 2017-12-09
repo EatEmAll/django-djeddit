@@ -45,6 +45,12 @@ class TestCalls(object):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(self.template)
 
+    def _test_call_view_loads_redirects(self, url, data=None):
+        data = data or {}
+        response = self.client.get(url, data)
+        self.assertEqual(response.status_code, 302)
+        self.assertTemplateUsed(self.template)
+
     def _test_call_view_submit(self, url, code=200, data=None):
         data = data or {}
         response = self.client.post(url, data)

@@ -1,16 +1,18 @@
-from django.contrib.auth.decorators import login_required
+import json
+import logging
+
 from django.http import JsonResponse, HttpResponse
-from django.shortcuts import render, redirect
 from django.http import Http404, HttpResponseForbidden, HttpResponseBadRequest, HttpResponseRedirect
+
+from django.shortcuts import render, redirect
+
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.decorators import login_required
 
 from djeddit.forms import TopicForm, ThreadForm, PostForm
 from djeddit.models import Topic, Thread, Post, UserPostVote
 from djeddit.templatetags.djeddit_tags import postScore
-from django.contrib.auth.models import User
-from django.contrib.auth.decorators import user_passes_test
-import json
-
-import logging
 
 
 # Create your views here.
@@ -226,7 +228,7 @@ def deletePost(request, post_uid):
     if op.uid == post_uid:
         return redirect('topicPage', thread.topic.urlTitle)
     else:
-        return redirect('threadPage', thread.topic.urlTitle, thread.id)
+        return redirect('threadSlugPage', thread.topic.urlTitle, thread.id, thread.slug)
 
 
 def loadAdditionalReplies(request):

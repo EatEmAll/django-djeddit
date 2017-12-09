@@ -172,7 +172,10 @@ class ThreadPageTest(TestCase, TestCalls):
 
     def testLoads(self):
         url = reverse('threadPage', args=[self.topic.urlTitle, self.thread.id])
-        self._test_call_view_loads(url)
+        self._test_call_view_loads_redirects(url)
+        url_slug = reverse('threadSlugPage', args=[self.topic.urlTitle, self.thread.id, self.thread.slug])
+        self._test_call_view_loads(url_slug)
+        self._test_call_view_loads(self.thread.get_absolute_url())
 
     def testWrongTopic(self):
         url = reverse('threadPage', args=['Fake_Topic', self.thread.id])
@@ -336,7 +339,7 @@ class DeletePostTest(TestCase, TestCalls):
 
     def testDeleteComment(self):
         self.login()
-        redirect_url = reverse('threadPage', args=[self.thread.topic.urlTitle, self.thread.id])
+        redirect_url = reverse('threadSlugPage', args=[self.thread.topic.urlTitle, self.thread.id, self.thread.slug])
         self._test_call_view_redirects(self.url, redirect_url)
         self.assertRaises(Post.DoesNotExist, self.comment.refresh_from_db)
 
