@@ -198,5 +198,5 @@ class Post(MPTTModel, NamedModel):
 
 class UserPostVote(NamedModel):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='+')
-    post = models.ForeignKey(Post, related_name='+')
+    post = models.ForeignKey(Post, related_name='+', on_delete=models.CASCADE)
     val = IntegerRangeField(blank=True, default=0, min_value=-1, max_value=1)
