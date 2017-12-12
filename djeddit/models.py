@@ -87,6 +87,10 @@ class Thread(NamedModel):
     def relativeUrl(self):
         return reverse('threadPage', args=[self.topic.urlTitle, self.id, self.slug])
 
+
+    def get_absolute_url(self):
+        return reverse('threadPage', args=[self.topic.urlTitle, self.id, self.slug])
+
     def __str__(self):
         return self.title
 
