@@ -1,15 +1,20 @@
+# Core django imports
 from django.conf import settings
 from django import VERSION as DJANGO_VERSION
+from django.utils.encoding import python_2_unicode_compatible
+from django.core.validators import RegexValidator
+from django.db import models
 if DJANGO_VERSION[:2] < (1, 10):
     from django.core.urlresolvers import reverse
 else:
     from django.urls import reverse
-from django.core.validators import RegexValidator
-from django.db import models
+
+# Third party imports
 from mptt.models import MPTTModel, TreeForeignKey
-from djeddit.utils.utility_funcs import gen_uuid, wsi_confidence
 from slugify import slugify
 
+# Our app imports
+from djeddit.utils.utility_funcs import gen_uuid, wsi_confidence
 
 class IntegerRangeField(models.IntegerField):
     def __init__(self, verbose_name=None, name=None, min_value=None, max_value=None, **kwargs):
@@ -30,6 +35,7 @@ class NamedModel(models.Model):
         return self.__class__.__name__
 
 
+@python_2_unicode_compatible
 class Topic(NamedModel):
     alphanumeric = RegexValidator(r'^[0-9a-zA-Z ]*$', 'Only alphanumeric characters are allowed.')
     title = models.CharField(max_length=20, blank=False, unique=True, validators=[alphanumeric])
@@ -49,7 +55,10 @@ class Topic(NamedModel):
         except Topic.DoesNotExist:
             return Topic.objects.get(title=title.replace('_', ' '))
 
+    def __str__(self):
+        return self.title
 
+@python_2_unicode_compatible
 class Thread(NamedModel):
     title = models.CharField(max_length=70, blank=False)
     slug = models.SlugField(unique=False, null=True)
@@ -78,7 +87,10 @@ class Thread(NamedModel):
     def relativeUrl(self):
         return reverse('threadPage', args=[self.topic.urlTitle, self.id, self.slug])
 
+    def __str__(self):
+        return self.title
 
+@python_2_unicode_compatible
 class Post(MPTTModel, NamedModel):
     uid = models.UUIDField(max_length=8, primary_key=True, default=gen_uuid, editable=False)
     content = models.TextField(blank=True, default='')
@@ -175,6 +187,9 @@ class Post(MPTTModel, NamedModel):
             if p.included_children:
                 children += p.getChildrenList()
         return children
+
+    def __str__(self):
+        return self.content[:70]
 
 
 class UserPostVote(NamedModel):
