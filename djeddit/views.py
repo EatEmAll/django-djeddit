@@ -1,18 +1,18 @@
-#Python standard imports
+# Python standard imports
 import json
 import logging
 
-#Core Dajngo imports
+# Core Dajngo imports
 from django.http import JsonResponse, HttpResponse, Http404, HttpResponseForbidden, HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.decorators import login_required
 
-#Third-party app imports
+# Third-party app imports
 from ipware.ip import get_ip
 
-#Imports from our apps
+# Imports from our apps
 from djeddit.forms import TopicForm, ThreadForm, PostForm
 from djeddit.models import Topic, Thread, Post, UserPostVote
 from djeddit.templatetags.djeddit_tags import postScore
@@ -37,13 +37,13 @@ def createThread(request, topic_title=None):
                     ip = get_ip(request)
                     if ip is not None:
                         post.ip_address = ip
-                    
+
                     ua = request.META.get('HTTP_USER_AGENT', '')
                     if ua:
-                        post.user_agent = ua 
-                    
+                        post.user_agent = ua
+
                     thread.save()
-                    
+
                     if request.user.is_authenticated():
                         post.created_by = request.user
                     post.save()
@@ -147,15 +147,15 @@ def replyPost(request, post_uid=''):
         if postForm.is_valid():
             post = postForm.save(commit=False)
             post.parent = repliedPost
-                                
+
             ip = get_ip(request)
             if ip is not None:
                 post.ip_address = ip
-                  
+
             ua = request.META.get('HTTP_USER_AGENT', '')
             if ua:
-                post.user_agent = ua 
-            
+                post.user_agent = ua
+
             if request.user.is_authenticated():
                 post.created_by = request.user
             post.save()
