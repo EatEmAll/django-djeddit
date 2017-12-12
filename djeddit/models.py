@@ -90,6 +90,9 @@ class Post(MPTTModel, NamedModel):
     _downvotes = models.IntegerField(blank=True, default=0)
     wsi = models.FloatField(blank=True, default=0) # Wilson score interval
 
+    ip_address = models.GenericIPAddressField(blank=True, null=True)
+    user_agent = models.CharField(max_length=150, blank=True, null=True)
+
     def __init__(self, *args, **kwargs):
         super(Post, self).__init__(*args, **kwargs)
         Post.upvotes = property(lambda self: self._upvotes, Post._voteSetterWrapper('_upvotes'))
