@@ -149,8 +149,8 @@ def replyPost(request, post_uid=''):
             post.parent = repliedPost
                                 
             ip = get_ip(request)
-                if ip is not None:
-                    post.ip_address = ip
+            if ip is not None:
+                post.ip_address = ip
                   
             ua = request.META.get('HTTP_USER_AGENT', '')
             if ua:
