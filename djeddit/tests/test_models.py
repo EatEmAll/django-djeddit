@@ -25,7 +25,7 @@ class TopicModelTest(TestCase):
         self.assertEqual(self.topic.getThreadCount(), self.threadCount)
 
     def testUrlTitle(self):
-        self.assertEqual(self.topic.urlTitle, 'Test_Topic')
+        self.assertEqual(self.topic.urlTitle, 'Test-Topic')
 
     def testGetTopic(self):
         self.assertEqual(Topic.getTopic('Test Topic'), self.topic)
