@@ -3,6 +3,7 @@ from django.conf import settings
 from django import VERSION as DJANGO_VERSION
 from django.utils.encoding import python_2_unicode_compatible
 from django.core.validators import RegexValidator
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 if DJANGO_VERSION[:2] < (1, 10):
     from django.core.urlresolvers import reverse
@@ -55,10 +56,14 @@ class Topic(NamedModel):
     def getTopic(title):
         try:
             return Topic.objects.get(title=title)
-        except Topic.DoesNotExist:
-            return Topic.objects.get(title=title.replace('_', ' '))
-        except Topic.DoesNotExist:
-            return Topic.objects.get(title=title.replace('-', ' '))
+        except ObjectDoesNotExist:
+            try:
+                return Topic.objects.get(title=title.replace('_', ' '))
+            except ObjectDoesNotExist:
+                return Topic.objects.get(title=title.replace('-', ' '))
+
+    def get_absolute_url(self):
+        return reverse(topicsPage, args=[self.urlTitle])
 
     def __str__(self):
         return self.title

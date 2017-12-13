@@ -97,6 +97,9 @@ def topicsPage(request):
 def topicPage(request, topic_title):
     try:
         topic = Topic.getTopic(topic_title)
+        if "_" in topic_title:
+            return HttpResponseRedirect(topic.get_absolute_url())
+
     except Topic.DoesNotExist:
         raise Http404()
     # edit topic form
@@ -123,6 +126,8 @@ def threadPage(request, topic_title='', thread_id='', slug=''):
             thread = Thread.objects.get(id=thread_id)
             if thread.topic == topic:
                 if not slug or slug != thread.slug:
+                    return HttpResponseRedirect(thread.relativeUrl)
+                if "_" in topic_title:
                     return HttpResponseRedirect(thread.relativeUrl)
                 thread.views += 1
                 thread.save()
