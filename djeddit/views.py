@@ -8,6 +8,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.decorators import login_required
+from django.conf import settings
 
 # Third-party app imports
 from ipware.ip import get_ip
