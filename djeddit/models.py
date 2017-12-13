@@ -46,6 +46,9 @@ class Topic(NamedModel):
 
     @property
     def urlTitle(self):
+        return self.title.replace(' ', '-')
+
+    def urlTitleOld(self):
         return self.title.replace(' ', '_')
 
     @staticmethod
@@ -54,6 +57,8 @@ class Topic(NamedModel):
             return Topic.objects.get(title=title)
         except Topic.DoesNotExist:
             return Topic.objects.get(title=title.replace('_', ' '))
+        except Topic.DoesNotExist:
+            return Topic.objects.get(title=title.replace('-', ' '))
 
     def __str__(self):
         return self.title
