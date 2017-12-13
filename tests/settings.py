@@ -26,9 +26,9 @@ INSTALLED_APPS = [
     # 3rd party apps
     'crispy_forms',
     'mptt',
-    'meta'
+    'meta',
     # project apps
-    'djeddit'
+    'djeddit',
 ]
 
 MIDDLEWARE_CLASSES = [
