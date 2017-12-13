@@ -11,6 +11,7 @@ from django.contrib.auth.decorators import login_required
 
 # Third-party app imports
 from ipware.ip import get_ip
+from meta.views import Meta
 
 # Imports from our apps
 from djeddit.forms import TopicForm, ThreadForm, PostForm
@@ -129,9 +130,17 @@ def threadPage(request, topic_title='', thread_id='', slug=''):
                     return HttpResponseRedirect(thread.relativeUrl)
                 if "_" in topic_title:
                     return HttpResponseRedirect(thread.relativeUrl)
+                if thread.op.content:
+                    description = thread.op.content[:160]
+                else:
+                    description = getattr(settings, "DJEDDIT_DESCRIPTION", "The link sharing and discussion portal")
+                meta = Meta(
+                    title=thread.title,
+                    description = description,
+                )
                 thread.views += 1
                 thread.save()
-                context = dict(thread=thread, nodes=thread.op.getSortedReplies())
+                context = dict(thread=thread, nodes=thread.op.getSortedReplies(), meta=meta)
                 return render(request, 'djeddit/thread.html', context)
         except (Topic.DoesNotExist, Thread.DoesNotExist):
             pass

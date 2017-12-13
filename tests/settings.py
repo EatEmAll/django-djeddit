@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     # 3rd party apps
     'crispy_forms',
     'mptt',
+    'meta'
     # project apps
     'djeddit'
 ]
