@@ -63,7 +63,7 @@ class Topic(NamedModel):
                 return Topic.objects.get(title=title.replace('-', ' '))
 
     def get_absolute_url(self):
-        return reverse(topicsPage, args=[self.urlTitle])
+        return reverse('topicPage', args=[self.urlTitle])
 
     def __str__(self):
         return self.title
