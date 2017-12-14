@@ -137,6 +137,7 @@ def threadPage(request, topic_title='', thread_id='', slug=''):
                     description = getattr(settings, "DJEDDIT_DESCRIPTION", "The link sharing and discussion portal")
                 meta = Meta(
                     title=thread.title,
+                    use_title_tag=True,
                     description = description,
                 )
                 thread.views += 1
