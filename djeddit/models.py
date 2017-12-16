@@ -49,6 +49,7 @@ class Topic(NamedModel):
     def urlTitle(self):
         return self.title.replace(' ', '-')
 
+    @property
     def urlTitleOld(self):
         return self.title.replace(' ', '_')
 
