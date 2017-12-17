@@ -10,4 +10,6 @@ Development Lead
 Contributors
 ------------
 
-None yet. Why not be the first?
+* Logmytech <https://github.com/logmytech/>
+
+Want to be on the list?
