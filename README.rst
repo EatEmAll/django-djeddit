@@ -38,6 +38,13 @@ Screenshots
 
 .. image:: https://raw.githubusercontent.com/EatEmAll/django-djeddit/master/media/Comments.jpg
 
+Supported Dajngo versions
+----------
+
+The app is currently tested with Django 1.8, 1.9, 1.10 and 1.11
+
+It doesn't yet work with Django 2.0
+
 Quickstart
 ----------
 
