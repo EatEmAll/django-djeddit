@@ -11,6 +11,7 @@ To use django-djeddit in a project, add it to your `INSTALLED_APPS`:
         'crispy_forms',
         'mptt',
         'djeddit',
+        'meta',
         ...
         ]
 
