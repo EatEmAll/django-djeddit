@@ -5,7 +5,7 @@ from .models import Thread
 
 class ThreadSitemap(Sitemap):
     changefreq = "daily"
-    priority = 0.7
+    priority = 0.5
 
     def items(self):
         return Thread.objects.all()
