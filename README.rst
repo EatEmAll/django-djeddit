@@ -38,6 +38,13 @@ Screenshots
 
 .. image:: https://raw.githubusercontent.com/EatEmAll/django-djeddit/master/media/Comments.jpg
 
+Supported Dajngo versions
+----------
+
+The app is currently tested with Django 1.8, 1.9, 1.10 and 1.11
+
+It doesn't yet work with Django 2.0
+
 Quickstart
 ----------
 
@@ -54,6 +61,7 @@ Add it and its dependencies to your `INSTALLED_APPS`:
         'crispy_forms',
         'mptt',
         'djeddit',
+        'meta',
         ...
         ]
 
@@ -101,9 +109,13 @@ Dependencies:
 
 *  django-mptt_
 *  crispy_forms_
+*  django-meta_
+*  django-ipware_
 
 .. _django-mptt: https://github.com/django-mptt/django-mptt
 .. _crispy_forms: https://github.com/django-crispy-forms/django-crispy-forms
+.. _django-meta: https://github.com/nephila/django-meta
+.. _django-ipware: https://github.com/un33k/django-ipware
 
 Tools used in rendering this package:
 

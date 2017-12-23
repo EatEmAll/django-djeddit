@@ -35,8 +35,8 @@ urlpatterns = [
     url(r'^user/(.+)/replies/?$', views.userRepliesPage, name='userReplies'),
     url(r'^users/?$', views.usersPage, name='usersPage'),
     url(r'^set_user_status/?$', views.setUserStatus, name='setUserStatus'),
-    url(r'^%s(\w+)/?$' % topic_prefix, views.topicPage, name='topicPage'),
-    url(r'^%s(\w+)/delete_topic/?$' % topic_prefix, views.deleteTopic, name='deleteTopic'),
-    url(r'^%s(\w+)/newthread/?$' % topic_prefix, views.createThread, name='createThread'),
-    url(r'^%s(?P<topic_title>\w+)/(?P<thread_id>\d+)/(?P<slug>[a-z0-9\-]+)?/?$' % topic_prefix, views.threadPage, name='threadPage'),
+    url(r'^%s([a-zA-Z0-9\-_]+)/?$' % topic_prefix, views.topicPage, name='topicPage'),
+    url(r'^%s([a-zA-Z0-9\-_]+)/delete_topic/?$' % topic_prefix, views.deleteTopic, name='deleteTopic'),
+    url(r'^%s([a-zA-Z0-9\-_]+)/newthread/?$' % topic_prefix, views.createThread, name='createThread'),
+    url(r'^%s(?P<topic_title>[a-zA-Z0-9\-_]+)/(?P<thread_id>\d+)/(?P<slug>[a-z0-9\-]+)?/?$' % topic_prefix, views.threadPage, name='threadPage'),
 ]

@@ -11,6 +11,7 @@ To use django-djeddit in a project, add it to your `INSTALLED_APPS`:
         'crispy_forms',
         'mptt',
         'djeddit',
+        'meta',
         ...
         ]
 
@@ -85,10 +86,10 @@ Add the following apps to your installed apps if they are not already there
     'django.contrib.sites',
     'django.contrib.sitemaps',
 
-Create the sitemaps dictionary with the djeddit sitemap import
+Create the sitemaps dictionary with the djeddit sitemap and core django sitemap imports in the urls.py of your project
 
 .. code-block:: python
-
+    from django.contrib.sitemaps.views import sitemap
     from djeddit.sitemaps import ThreadSitemap
 
     sitemaps = {
@@ -97,9 +98,9 @@ Create the sitemaps dictionary with the djeddit sitemap import
 Now add the following to your `urlpatterns`
 
 .. code-block:: python
-    
+
     url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
-    
+
 Run migrations and run server
 
 If you visit `sitemap.xml` on your site you should have a working sitemap for djeddit threads.

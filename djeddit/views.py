@@ -1,16 +1,24 @@
-from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse, HttpResponse
-from django.shortcuts import render, redirect
-from django.http import Http404, HttpResponseForbidden, HttpResponseBadRequest, HttpResponseRedirect
+# Python standard imports
+import json
+import logging
 
+# Core Dajngo imports
+from django.http import JsonResponse, HttpResponse, Http404, HttpResponseForbidden, HttpResponseBadRequest, HttpResponseRedirect
+from django.shortcuts import render, redirect
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.decorators import login_required
+from django.conf import settings
+
+# Third-party app imports
+from ipware.ip import get_ip
+from meta.views import Meta
+
+# Imports from our apps
 from djeddit.forms import TopicForm, ThreadForm, PostForm
 from djeddit.models import Topic, Thread, Post, UserPostVote
 from djeddit.templatetags.djeddit_tags import postScore
-from django.contrib.auth.models import User
-from django.contrib.auth.decorators import user_passes_test
-import json
 
-import logging
 
 
 # Create your views here.
@@ -27,7 +35,17 @@ def createThread(request, topic_title=None):
                     post = postForm.save(commit=False)
                     thread.op = post
                     thread.topic = topic
+
+                    ip = get_ip(request)
+                    if ip is not None:
+                        post.ip_address = ip
+
+                    ua = request.META.get('HTTP_USER_AGENT', '')
+                    if ua:
+                        post.user_agent = ua
+
                     thread.save()
+
                     if request.user.is_authenticated():
                         post.created_by = request.user
                     post.save()
@@ -81,6 +99,9 @@ def topicsPage(request):
 def topicPage(request, topic_title):
     try:
         topic = Topic.getTopic(topic_title)
+        if "_" in topic_title:
+            return HttpResponseRedirect(topic.get_absolute_url())
+
     except Topic.DoesNotExist:
         raise Http404()
     # edit topic form
@@ -108,9 +129,20 @@ def threadPage(request, topic_title='', thread_id='', slug=''):
             if thread.topic == topic:
                 if not slug or slug != thread.slug:
                     return HttpResponseRedirect(thread.relativeUrl)
+                if "_" in topic_title:
+                    return HttpResponseRedirect(thread.relativeUrl)
+                if thread.op.content:
+                    description = thread.op.content[:160]
+                else:
+                    description = getattr(settings, "DJEDDIT_DESCRIPTION", "The link sharing and discussion portal")
+                meta = Meta(
+                    title=thread.title,
+                    use_title_tag=True,
+                    description = description,
+                )
                 thread.views += 1
                 thread.save()
-                context = dict(thread=thread, nodes=thread.op.getSortedReplies())
+                context = dict(thread=thread, nodes=thread.op.getSortedReplies(), meta=meta)
                 return render(request, 'djeddit/thread.html', context)
         except (Topic.DoesNotExist, Thread.DoesNotExist):
             pass
@@ -131,6 +163,15 @@ def replyPost(request, post_uid=''):
         if postForm.is_valid():
             post = postForm.save(commit=False)
             post.parent = repliedPost
+
+            ip = get_ip(request)
+            if ip is not None:
+                post.ip_address = ip
+
+            ua = request.META.get('HTTP_USER_AGENT', '')
+            if ua:
+                post.user_agent = ua
+
             if request.user.is_authenticated():
                 post.created_by = request.user
             post.save()

@@ -1,15 +1,21 @@
+# Core django imports
 from django.conf import settings
 from django import VERSION as DJANGO_VERSION
+from django.utils.encoding import python_2_unicode_compatible
+from django.core.validators import RegexValidator
+from django.core.exceptions import ObjectDoesNotExist
+from django.db import models
 if DJANGO_VERSION[:2] < (1, 10):
     from django.core.urlresolvers import reverse
 else:
     from django.urls import reverse
-from django.core.validators import RegexValidator
-from django.db import models
+
+# Third party imports
 from mptt.models import MPTTModel, TreeForeignKey
-from djeddit.utils.utility_funcs import gen_uuid, wsi_confidence
 from slugify import slugify
 
+# Our app imports
+from djeddit.utils.utility_funcs import gen_uuid, wsi_confidence
 
 class IntegerRangeField(models.IntegerField):
     def __init__(self, verbose_name=None, name=None, min_value=None, max_value=None, **kwargs):
@@ -30,6 +36,7 @@ class NamedModel(models.Model):
         return self.__class__.__name__
 
 
+@python_2_unicode_compatible
 class Topic(NamedModel):
     alphanumeric = RegexValidator(r'^[0-9a-zA-Z ]*$', 'Only alphanumeric characters are allowed.')
     title = models.CharField(max_length=20, blank=False, unique=True, validators=[alphanumeric])
@@ -40,16 +47,29 @@ class Topic(NamedModel):
 
     @property
     def urlTitle(self):
+        return self.title.replace(' ', '-')
+
+    @property
+    def urlTitleOld(self):
         return self.title.replace(' ', '_')
 
     @staticmethod
     def getTopic(title):
         try:
             return Topic.objects.get(title=title)
-        except Topic.DoesNotExist:
-            return Topic.objects.get(title=title.replace('_', ' '))
+        except ObjectDoesNotExist:
+            try:
+                return Topic.objects.get(title=title.replace('_', ' '))
+            except ObjectDoesNotExist:
+                return Topic.objects.get(title=title.replace('-', ' '))
 
+    def get_absolute_url(self):
+        return reverse('topicPage', args=[self.urlTitle])
 
+    def __str__(self):
+        return self.title
+
+@python_2_unicode_compatible
 class Thread(NamedModel):
     title = models.CharField(max_length=70, blank=False)
     slug = models.SlugField(unique=False, null=True)
@@ -79,6 +99,13 @@ class Thread(NamedModel):
         return reverse('threadPage', args=[self.topic.urlTitle, self.id, self.slug])
 
 
+    def get_absolute_url(self):
+        return reverse('threadPage', args=[self.topic.urlTitle, self.id, self.slug])
+
+    def __str__(self):
+        return self.title
+
+@python_2_unicode_compatible
 class Post(MPTTModel, NamedModel):
     uid = models.UUIDField(max_length=8, primary_key=True, default=gen_uuid, editable=False)
     content = models.TextField(blank=True, default='')
@@ -89,6 +116,9 @@ class Post(MPTTModel, NamedModel):
     _upvotes = models.IntegerField(blank=True, default=0)
     _downvotes = models.IntegerField(blank=True, default=0)
     wsi = models.FloatField(blank=True, default=0) # Wilson score interval
+
+    ip_address = models.GenericIPAddressField(blank=True, null=True)
+    user_agent = models.CharField(max_length=150, blank=True, null=True)
 
     def __init__(self, *args, **kwargs):
         super(Post, self).__init__(*args, **kwargs)
@@ -173,8 +203,11 @@ class Post(MPTTModel, NamedModel):
                 children += p.getChildrenList()
         return children
 
+    def __str__(self):
+        return self.content[:70]
+
 
 class UserPostVote(NamedModel):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='+')
-    post = models.ForeignKey(Post, related_name='+')
+    post = models.ForeignKey(Post, related_name='+', on_delete=models.CASCADE)
     val = IntegerRangeField(blank=True, default=0, min_value=-1, max_value=1)
