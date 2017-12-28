@@ -13,9 +13,11 @@ else:
 # Third party imports
 from mptt.models import MPTTModel, TreeForeignKey
 from slugify import slugify
+from ipware.ip import get_ip
 
 # Our app imports
 from djeddit.utils.utility_funcs import gen_uuid, wsi_confidence
+
 
 class IntegerRangeField(models.IntegerField):
     def __init__(self, verbose_name=None, name=None, min_value=None, max_value=None, **kwargs):
@@ -42,6 +44,9 @@ class Topic(NamedModel):
     title = models.CharField(max_length=20, blank=False, unique=True, validators=[alphanumeric])
     description = models.CharField(max_length=120, blank=True, default='')
 
+    def __str__(self):
+        return self.title
+
     def getThreadCount(self):
         return Thread.objects.filter(topic=self).count()
 
@@ -49,25 +54,13 @@ class Topic(NamedModel):
     def urlTitle(self):
         return self.title.replace(' ', '-')
 
-    @property
-    def urlTitleOld(self):
-        return self.title.replace(' ', '_')
-
     @staticmethod
     def getTopic(title):
         try:
             return Topic.objects.get(title=title)
         except ObjectDoesNotExist:
-            try:
-                return Topic.objects.get(title=title.replace('_', ' '))
-            except ObjectDoesNotExist:
-                return Topic.objects.get(title=title.replace('-', ' '))
+            return Topic.objects.get(title=title.replace('-', ' '))
 
-    def get_absolute_url(self):
-        return reverse('topicPage', args=[self.urlTitle])
-
-    def __str__(self):
-        return self.title
 
 @python_2_unicode_compatible
 class Thread(NamedModel):
@@ -78,6 +71,9 @@ class Thread(NamedModel):
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
     op = models.ForeignKey('Post', related_name='+', on_delete=models.CASCADE)
     locked = models.BooleanField(blank=True, default=False)
+
+    def __str__(self):
+        return self.title
 
     def save(self, *args, **kwargs):
         self.slug = self._genSlug()
@@ -99,12 +95,6 @@ class Thread(NamedModel):
         return reverse('threadPage', args=[self.topic.urlTitle, self.id, self.slug])
 
 
-    def get_absolute_url(self):
-        return reverse('threadPage', args=[self.topic.urlTitle, self.id, self.slug])
-
-    def __str__(self):
-        return self.title
-
 @python_2_unicode_compatible
 class Post(MPTTModel, NamedModel):
     uid = models.UUIDField(max_length=8, primary_key=True, default=gen_uuid, editable=False)
@@ -116,7 +106,6 @@ class Post(MPTTModel, NamedModel):
     _upvotes = models.IntegerField(blank=True, default=0)
     _downvotes = models.IntegerField(blank=True, default=0)
     wsi = models.FloatField(blank=True, default=0) # Wilson score interval
-
     ip_address = models.GenericIPAddressField(blank=True, null=True)
     user_agent = models.CharField(max_length=150, blank=True, null=True)
 
@@ -127,6 +116,9 @@ class Post(MPTTModel, NamedModel):
 
     class MPTTMetta:
         order_insertion_by = ['created_on']
+
+    def __str__(self):
+        return self.content[:70]
 
     @staticmethod
     def _voteSetterWrapper(attr):
@@ -203,8 +195,14 @@ class Post(MPTTModel, NamedModel):
                 children += p.getChildrenList()
         return children
 
-    def __str__(self):
-        return self.content[:70]
+    def setMeta(self, request):
+        """update post ip_address & user_agent attributes"""
+        ip = get_ip(request)
+        if ip is not None:
+            self.ip_address = ip
+        ua = request.META.get('HTTP_USER_AGENT', '')
+        if ua:
+            self.user_agent = ua
 
 
 class UserPostVote(NamedModel):

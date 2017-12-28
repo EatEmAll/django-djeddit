@@ -9,7 +9,7 @@ from django.contrib.sitemaps.views import sitemap
 from djeddit.sitemaps import ThreadSitemap
 
 sitemaps = {
-    'djeddit' : ThreadSitemap
+    'djeddit': ThreadSitemap
 }
 
 urlpatterns = [

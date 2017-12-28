@@ -20,8 +20,8 @@ from djeddit.models import Topic, Thread, Post, UserPostVote
 from djeddit.templatetags.djeddit_tags import postScore
 
 
-
 # Create your views here.
+
 
 def createThread(request, topic_title=None):
     if topic_title:
@@ -35,17 +35,8 @@ def createThread(request, topic_title=None):
                     post = postForm.save(commit=False)
                     thread.op = post
                     thread.topic = topic
-
-                    ip = get_ip(request)
-                    if ip is not None:
-                        post.ip_address = ip
-
-                    ua = request.META.get('HTTP_USER_AGENT', '')
-                    if ua:
-                        post.user_agent = ua
-
+                    post.setMeta(request)
                     thread.save()
-
                     if request.user.is_authenticated():
                         post.created_by = request.user
                     post.save()
@@ -99,9 +90,6 @@ def topicsPage(request):
 def topicPage(request, topic_title):
     try:
         topic = Topic.getTopic(topic_title)
-        if "_" in topic_title:
-            return HttpResponseRedirect(topic.get_absolute_url())
-
     except Topic.DoesNotExist:
         raise Http404()
     # edit topic form
@@ -129,8 +117,6 @@ def threadPage(request, topic_title='', thread_id='', slug=''):
             if thread.topic == topic:
                 if not slug or slug != thread.slug:
                     return HttpResponseRedirect(thread.relativeUrl)
-                if "_" in topic_title:
-                    return HttpResponseRedirect(thread.relativeUrl)
                 if thread.op.content:
                     description = thread.op.content[:160]
                 else:
@@ -138,7 +124,7 @@ def threadPage(request, topic_title='', thread_id='', slug=''):
                 meta = Meta(
                     title=thread.title,
                     use_title_tag=True,
-                    description = description,
+                    description=description,
                 )
                 thread.views += 1
                 thread.save()
@@ -163,14 +149,7 @@ def replyPost(request, post_uid=''):
         if postForm.is_valid():
             post = postForm.save(commit=False)
             post.parent = repliedPost
-
-            ip = get_ip(request)
-            if ip is not None:
-                post.ip_address = ip
-
-            ua = request.META.get('HTTP_USER_AGENT', '')
-            if ua:
-                post.user_agent = ua
+            post.setMeta(request)
 
             if request.user.is_authenticated():
                 post.created_by = request.user

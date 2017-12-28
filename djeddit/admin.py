@@ -15,11 +15,11 @@ class PostAdmin(admin.ModelAdmin):
     fields = ('content', 'modified_on')
     readonly_fields = ('created_by',
                        'created_on',
-                        '_upvotes',
-                        '_downvotes',
-                         'wsi',
-                         'parent',
-                         'ip_address',
-                         'user_agent')
+                       '_upvotes',
+                       '_downvotes',
+                       'wsi',
+                       'parent',
+                       'ip_address',
+                       'user_agent')
 
 admin.site.register(Topic)
