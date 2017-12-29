@@ -54,6 +54,9 @@ class Topic(NamedModel):
     def urlTitle(self):
         return self.title.replace(' ', '-')
 
+    def get_absolute_url(self):
+        return reverse('topicPage', args=[self.urlTitle])
+
     @staticmethod
     def getTopic(title):
         try:
@@ -93,6 +96,9 @@ class Thread(NamedModel):
     @property
     def relativeUrl(self):
         return reverse('threadPage', args=[self.topic.urlTitle, self.id, self.slug])
+
+    def get_absolute_url(self):
+        return self.relativeUrl
 
 
 @python_2_unicode_compatible
