@@ -49,8 +49,6 @@ matrix:
     env: TOX_ENV=py35-django-20
   - python: "3.4"
     env: TOX_ENV=py34-django-20
-  - python: "2.7"
-    env: TOX_ENV=py27-django-20
 
 
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
