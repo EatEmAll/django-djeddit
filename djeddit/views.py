@@ -18,6 +18,7 @@ from meta.views import Meta
 from djeddit.forms import TopicForm, ThreadForm, PostForm
 from djeddit.models import Topic, Thread, Post, UserPostVote
 from djeddit.templatetags.djeddit_tags import postScore
+from djeddit.utils.utility_funcs import is_authenticated
 
 
 # Create your views here.
@@ -37,7 +38,7 @@ def createThread(request, topic_title=None):
                     thread.topic = topic
                     post.setMeta(request)
                     thread.save()
-                    if request.user.is_authenticated():
+                    if is_authenticated(request):
                         post.created_by = request.user
                     post.save()
                     return HttpResponseRedirect(thread.relativeUrl)
@@ -153,7 +154,7 @@ def replyPost(request, post_uid=''):
             post.parent = repliedPost
             post.setMeta(request)
 
-            if request.user.is_authenticated():
+            if is_authenticated(request):
                 post.created_by = request.user
             post.save()
             repliedPost.children.add(post)
