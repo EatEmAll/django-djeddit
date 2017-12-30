@@ -137,6 +137,10 @@ class TopicPageTest(TestCase, TestCalls):
     def testLoads(self):
         self._test_call_view_loads(self.url)
 
+    def testRedirectsOldTitle(self):
+        url = reverse('topicPage', args=[self.topic.title.replace(' ', '_')])
+        self._test_call_view_redirects(url, redirected_url=self.url)
+
     def testUnknownTopic(self):
         url = reverse('topicPage', args=['Fake_Topic'])
         self._test_call_view_code(url, 404)
@@ -174,12 +178,22 @@ class ThreadPageTest(TestCase, TestCalls):
 
     def testLoads(self):
         self._test_call_view_loads(self.thread.relativeUrl)
-        old_topic_url_no_slug = reverse('threadPage', args=[self.topic.urlTitle, self.thread.pk])
-        self._test_call_view_redirects(url=old_topic_url_no_slug, redirected_url=self.thread.relativeUrl)
+
+    def testWrongSlug(self):
+        # test no slug
+        url = reverse('threadPage', args=[self.topic.urlTitle, self.thread.pk])
+        self._test_call_view_redirects(url, redirected_url=self.thread.relativeUrl)
+        # test wrong slug
+        url = reverse('threadPage', args=[self.topic.urlTitle, self.thread.pk, 'wrong-page'])
+        self._test_call_view_redirects(url, redirected_url=self.thread.relativeUrl)
 
     def testWrongTopic(self):
         url = reverse('threadPage', args=['Fake_Topic', self.thread.id, 'fake-topic'])
         self._test_call_view_code(url, 404)
+
+    def testOldTitleRedirect(self):
+        url = reverse('threadPage', args=[self.topic.title.replace(' ', '_'), self.topic.pk, self.thread.slug])
+        self._test_call_view_redirects(url, redirected_url=self.thread.relativeUrl)
 
     def testWrongThread(self):
         url = reverse('threadPage', args=[self.topic.urlTitle, self.thread.id + 1, 'fake-topic'])

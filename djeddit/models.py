@@ -62,7 +62,10 @@ class Topic(NamedModel):
         try:
             return Topic.objects.get(title=title)
         except ObjectDoesNotExist:
-            return Topic.objects.get(title=title.replace('-', ' '))
+            try:
+                return Topic.objects.get(title=title.replace('-', ' '))
+            except ObjectDoesNotExist:
+                return Topic.objects.get(title=title.replace('_', ' '))
 
 
 @python_2_unicode_compatible

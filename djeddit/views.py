@@ -93,6 +93,8 @@ def topicPage(request, topic_title):
     except Topic.DoesNotExist:
         raise Http404()
     # edit topic form
+    if topic.urlTitle != topic_title:
+        return redirect('topicPage', topic.urlTitle)
     if request.method == 'POST':
         if not request.user.is_superuser:
             return HttpResponseForbidden()
@@ -115,7 +117,7 @@ def threadPage(request, topic_title='', thread_id='', slug=''):
             topic = Topic.getTopic(topic_title)
             thread = Thread.objects.get(id=thread_id)
             if thread.topic == topic:
-                if not slug or slug != thread.slug:
+                if not slug or slug != thread.slug or topic.urlTitle != topic_title:
                     return HttpResponseRedirect(thread.relativeUrl)
                 if thread.op.content:
                     description = thread.op.content[:160]
