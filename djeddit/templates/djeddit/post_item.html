@@ -47,7 +47,7 @@
                                 Edit
                             </button>
                         {% endif %}
-                        <button onclick="window.postFuncs.togglePostForm('{{ node.uid }}', this, 'reply_post/')" class="btn btn-default" {% if thread.locked %}disabled{% endif %}>
+                        <button onclick="window.postFuncs.togglePostForm('{{ node.uid }}', this, '{% url 'replyPost' %}')" class="btn btn-default" {% if thread.locked %}disabled{% endif %}>
                             Reply
                         </button>
                         {% if node.parent %}
