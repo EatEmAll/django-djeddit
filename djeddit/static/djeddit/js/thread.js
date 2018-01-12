@@ -7,14 +7,14 @@ window.postFuncs = {
         $('#' + post + '>.bs-callout-main').next().remove();
     },
     togglePostForm: function (post, toggle, url) {
-        url = window.util.getAbsoluteURL(url + post);
+        url = urljoin(url, post);
         var $placeAfter = $('#' + post + '>.bs-callout-main');
         window.util.toggleForm(url, $placeAfter, {}, $(toggle));
     },
     toggleEditForm: function (post, toggle, toggleHeader) {
         var $placeAfter = $('#' + post + '>.bs-callout-main');
         $placeAfter.toggle();
-        this.togglePostForm(post, toggle, 'edit_post/');
+        this.togglePostForm(post, toggle, window.URLS['editPost']);
         if (toggleHeader)
             $('.bs-callout-heading').toggle();
     },
@@ -24,7 +24,7 @@ window.postFuncs = {
             vote += 1;
         if (downvoted)
             vote -= 1;
-        var url = window.util.getAbsoluteURL('vote_post');
+        var url = window.URLS['votePost'];
         var params = {post: post, vote: vote};
         $.post(url, params, function (data) {
             var $post = $('#' + post);
@@ -53,7 +53,7 @@ window.postFuncs = {
     },
     deletePost: function (post, show_confirm) {
         if (!show_confirm || confirm('This will permanently delete this thread and all related comments'))
-            window.location = window.util.getAbsoluteURL('delete_post/' + post);
+            window.location = urljoin(window.URLS['deletePost'], post);
     },
     getPostRepliesUids: function (post) {
         // get uids of shown replies to a given post
@@ -69,7 +69,7 @@ window.postFuncs = {
     loadAdditionalReplies: function ($elem, post, op) {
         // load missing replies for a given post into $elem
         var excluded = this.getPostRepliesUids(post);
-        var url = window.util.getAbsoluteURL('load_additional_replies');
+        var url = window.URLS['loadAdditionalRepliess'];
         var params = {post: post ? post : op, excluded: JSON.stringify(excluded)};
         $.get(url, params, function (data) {
             $elem.replaceWith(data);
