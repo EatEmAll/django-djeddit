@@ -5,7 +5,7 @@
 window.topicFuncs = {
   deleteTopic: function (topic_title) {
     if (confirm('This will permanently delete this topic and all related threads')) {
-        window.location = window.util.getAbsoluteURL('topics/' + topic_title + '/delete_topic/');
+        window.location = window.TOPIC_URLS['deleteTopic'];
     }
   }
 };

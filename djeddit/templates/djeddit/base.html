@@ -55,14 +55,10 @@
 
 <script type="text/javascript">
     window.BASE_URL = "http://{{ request.get_host }}";
-    window.URLS = {
-				'editPost': "{% url 'editPost' %}",
-				'deletePost':"{% url 'deletePost'  %}",
-				'votePost':"{% url 'votePost' %}",
-				'loadAdditionalReplies':"{% url 'loadAdditionalReplies' %}",
-
-				'setUserStatus':"{% url 'setUserStatus' %}"
-			};
-
+		{% if user.is_superuser %}
+		window.USER_URLS ={
+		'setUserStatus':"{% url 'setUserStatus' %}"
+	};
+		{% endif %}
 </script>
 </html>
