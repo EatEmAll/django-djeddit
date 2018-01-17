@@ -25,6 +25,7 @@ topic_prefix = '%s/' % settings.TOPICS_URL if settings.TOPICS_URL else ''
 urlpatterns = [
     url(r'^%s$' % (topic_prefix + '/?' if topic_prefix else ''), views.topicsPage, name='topics'),
     url(r'^lock_thread/(\d+)?/?$', views.lockThread, name='lockThread'),
+    url(r'^sticky_thread/(\d+)?/?$', views.stickyThread, name='stickyThread'),
     url(r'^reply_post/([\w\-]{36})?/?$', views.replyPost, name='replyPost'),
     url(r'^edit_post/([\w\-]{36})?/?$', views.editPost, name='editPost'),
     url(r'^vote_post/?$', views.votePost, name='votePost'),

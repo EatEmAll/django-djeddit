@@ -77,6 +77,7 @@ class Thread(NamedModel):
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
     op = models.ForeignKey('Post', related_name='+', on_delete=models.CASCADE)
     locked = models.BooleanField(blank=True, default=False)
+    is_stickied = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
