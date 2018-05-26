@@ -12,9 +12,9 @@ def genSlugs(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('djeddit', '0003_auto_20170616_0203'),
+        ('djeddit', '0006_thread_is_stickied'),
     ]
 
     operations = [
