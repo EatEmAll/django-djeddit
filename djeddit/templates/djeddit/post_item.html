@@ -63,8 +63,8 @@
                                 <button onclick="window.location = '{% url 'lockThread' thread.id %}';" class="btn btn-default">
                                     {% if not thread.locked %}Lock{% else %}Unlock{% endif %}
                                 </button>
-                                <button onclick="window.location = '{% url 'stickyThread' thread.id %}';" class="btn btn-default">
-                                    {% if not thread.is_stickied %}Un Sticky{% else %}Sticky{% endif %}
+                                <button onclick="window.location = '{% url 'stickyThread' thread.id %}';" class="btn btn-default btn-width-auto">
+                                    {% if thread.is_stickied %}Remove Sticky{% else %}Sticky{% endif %}
                                 </button>
                             {% endif %}
                         {% endif %}

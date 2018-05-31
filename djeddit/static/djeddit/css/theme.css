@@ -102,6 +102,9 @@ h6, .text-muted {
 .btn-group-xs.fixed-80 > .btn {
   width: 80px; }
 
+.btn.btn-width-auto {
+  width: auto !important; }
+
 .breadcrumb {
   background-color: transparent; }
 
