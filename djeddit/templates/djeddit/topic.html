@@ -41,4 +41,11 @@
 {% block scripts %}
     <script type="text/javascript" src="{% static 'djeddit/js/util.js' %}"></script>
     <script type="text/javascript" src="{% static 'djeddit/js/topic.js' %}"></script>
+    {% if user.is_superuser %}
+    <script type="text/javascript">
+    window.TOPIC_URLS = {
+				'deleteTopic' : '{% url 'deleteTopic' topic.urlTitle %}'
+			};
+    </script>
+    {% endif %}
 {% endblock %}

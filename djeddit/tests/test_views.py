@@ -86,7 +86,7 @@ class LockThreadTest(TestCase, TestCalls):
         cls.thread = Thread.objects.create(title='Test_Thread', topic=topic, op=Post.objects.create())
         cls.url = reverse('lockThread', args=[cls.thread.id])
 
-    def testLockAndUnlock(self):
+    def _testLockAndUnlock(self):
         self.login()
         # lock thread
         self._test_call_view_code(self.url, 302)
@@ -104,10 +104,47 @@ class LockThreadTest(TestCase, TestCalls):
         self.thread.op.refresh_from_db()
         self.assertEqual(self.thread.op.content, 'edited')
 
-    def testRequireSuperUser(self):
+    def _testRequireSuperUser(self):
         self._setup_user('not_admin', 'not_admin@example.com', password='pass')
         self.login()
         self._test_call_view_redirected_login(self.url)
+
+    def runTestsInSequence(self):
+        self._testLockAndUnlock()
+        self._testRequireSuperUser()
+
+    def testRequireLogin(self):
+        self._test_call_view_redirected_login(self.url)
+
+
+class StickyThreadTest(TestCase, TestCalls):
+    def __init__(self, *args, **kwargs):
+        TestCase.__init__(self, *args, **kwargs)
+        TestCalls.__init__(self)
+
+    @classmethod
+    def setUpTestData(cls):
+        cls._setup_user(username='admin', email='admin@example.com', password='pass', is_superuser=True)
+        topic = Topic.objects.create(title='Test Topic')
+        cls.thread = Thread.objects.create(title='Test_Thread', topic=topic, op=Post.objects.create())
+        cls.url = reverse('stickyThread', args=[cls.thread.id])
+
+    def _testStickyAndUnsticky(self):
+        self.login()
+        self.assertEqual(self.thread.is_stickied, False)
+        self._test_call_view_code(self.url, 302) # set sticky to true
+        self.assertEqual(self.thread.is_stickied, True)
+        self._test_call_view_code(self.url, 302)  # set sticky to false
+        self.assertEqual(self.thread.is_stickied, False)
+
+    def _testRequireSuperUser(self):
+        self._setup_user('not_admin', 'not_admin@example.com', password='pass')
+        self.login()
+        self._test_call_view_redirected_login(self.url)
+
+    def runTestsInSequence(self):
+        self._testStickyAndUnsticky()
+        self._testRequireSuperUser()
 
     def testRequireLogin(self):
         self._test_call_view_redirected_login(self.url)

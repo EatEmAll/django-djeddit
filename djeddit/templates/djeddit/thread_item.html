@@ -14,6 +14,9 @@
                     {% else %}
                         {% getAmount commentsCount 'comment' %}
                     {% endif %}
+                    {% if thread.is_stickied %}
+                        &nbsp;<i class="fa fa-map-pin"></i>
+                    {% endif %}
                 {% endwith %}
                 {% if showTopic %}on <a href="{% url 'topicPage' thread.topic.urlTitle %}">{{ thread.topic.title }}</a> {% endif %}
             </div>

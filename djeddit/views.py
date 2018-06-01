@@ -73,6 +73,17 @@ def lockThread(request, thread_id):
     return HttpResponseRedirect(thread.relativeUrl)
 
 
+@user_passes_test(lambda u: u.is_superuser)
+def stickyThread(request, thread_id):
+    try:
+        thread = Thread.objects.get(id=thread_id)
+    except Thread.DoesNotExist:
+        raise Http404
+    thread.is_stickied = not thread.is_stickied
+    thread.save()
+    return HttpResponseRedirect(thread.relativeUrl)
+
+
 def topicsPage(request):
     topics = Topic.objects.all()
     if request.method == 'POST':
@@ -107,8 +118,9 @@ def topicPage(request, topic_title):
     else:
         form = TopicForm(instance=topic)
         showForm = False
-    threads = Thread.objects.filter(topic=topic)
-    context = dict(topic=topic, threads=threads, showCreatedBy=True, showTopic=False, topicForm=form, showForm=showForm)
+    threads = Thread.objects.filter(topic=topic).order_by('-is_stickied', '-op__wsi')
+    context = dict(topic=topic, threads=threads, showCreatedBy=True, showTopic=False,
+                   topicForm=form, showForm=showForm)
     return render(request, 'djeddit/topic.html', context)
 
 

@@ -4,7 +4,7 @@
 
 window.userFuncs = {
     setUserStatus: function (username, status) {
-        var url = window.util.getAbsoluteURL('set_user_status');
+        var url = window.USER_URLS['setUserStatus'];
         $.post(url, {username: username, status: status});
     }
 };
