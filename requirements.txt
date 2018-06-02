@@ -1,6 +1,5 @@
 django-crispy-forms>=1.6.1
 django-mptt>=0.8.7
-# Additional requirements go here
 awesome-slugify==1.6.5
 django-ipware
 django-meta

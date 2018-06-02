@@ -21,7 +21,7 @@ def get_version(*file_paths):
     raise RuntimeError('Unable to find version string.')
 
 
-version = '0.3.1'
+version = '0.3.1.1'
 
 
 if sys.argv[-1] == 'publish':
@@ -56,9 +56,12 @@ setup(
         'djeddit',
     ],
     include_package_data=True,
-    install_requires=["django-model-utils>=2.0",
-                      "django-crispy-forms>=1.6.1",
-                      "django-mptt>=0.8.7"],
+    install_requires=["django-crispy-forms>=1.6.1",
+                      "django-mptt>=0.8.7",
+                      "awesome-slugify==1.6.5",
+                      "django-ipware",
+                      "django-meta"
+                      ],
     license="Apache Software License 2.0",
     zip_safe=False,
     keywords='django-djeddit',
