@@ -11,7 +11,10 @@ django-djeddit
 .. image:: https://codecov.io/gh/EatEmAll/django-djeddit/branch/master/graph/badge.svg
     :target: https://codecov.io/gh/EatEmAll/django-djeddit
 
-.. image:: https://img.shields.io/badge/python-2.7%2C%203.3%2C%203.4%2C%203.5-blue.svg
+.. image:: https://img.shields.io/badge/python-2.7%2C%203.4%2C%203.5%2C%203.6-blue.svg
+   :target: https://travis-ci.org/EatEmAll/django-djeddit
+
+.. image:: https://img.shields.io/badge/django%20versions-1.8%2C%201.9%2C%201.10%2C%201.11%2C%202.0-blue.svg
    :target: https://travis-ci.org/EatEmAll/django-djeddit
 
 Bare bones Django forum application with Reddit like features developed as a Django reusable app.
@@ -39,7 +42,7 @@ Screenshots
 .. image:: https://raw.githubusercontent.com/EatEmAll/django-djeddit/master/media/Comments.jpg
 
 Supported Dajngo versions
-----------
+-------------------------
 
 The app is currently tested with Django 1.8, 1.9, 1.10 and 1.11, 2.0
 
