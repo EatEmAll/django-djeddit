@@ -26,7 +26,17 @@ History
 * Admins can edit thread title, url, and post content
 * added users management page for admins
 * admins can edit & delete topics
-* added fields upvotes, downvotes, wsi to Post model
+* added fields upvotes, downvotes, wsi (Wilson score interval) to Post model
 * removed score field from Post model
 * comments are ranked using wilson scoring interval
 * added comments paging functionality (using "Load n more comments" links)
+
+0.3 (2018-06-02)
+++++++++++++++++
+
+* added option to define url prefix in settings.TOPICS_URL for topic & thread pages
+* added sitemap support
+* added url slugs to threads
+* added ip & user agent tracking for posts
+* added compatibility to Django 2.0
+* added thread stickies (can be added or removed by admins)
