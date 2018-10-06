@@ -34,13 +34,13 @@ def createThread(request, topic_title=None):
                 if threadForm.is_valid() and postForm.is_valid():
                     thread = threadForm.save(commit=False)
                     post = postForm.save(commit=False)
-                    thread.op = post
-                    thread.topic = topic
                     post.setMeta(request)
-                    thread.save()
                     if is_authenticated(request):
                         post.created_by = request.user
                     post.save()
+                    thread.op = post
+                    thread.topic = topic
+                    thread.save()
                     return HttpResponseRedirect(thread.relativeUrl)
             else:
                 threadForm = ThreadForm(prefix='thread')
