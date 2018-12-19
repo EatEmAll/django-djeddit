@@ -8,8 +8,8 @@
         <h2>{{ topic.title }}
             <div class="btn-group btn-group-xs fixed-80" role="group">
                 {% if user.is_superuser %}
-                    <button class="btn btn-primary" onclick="$('#topic-form-wrapper').toggleClass('hidden')">Edit Topic</button>
-                    <button class="btn btn-primary" onclick="window.topicFuncs.deleteTopic('{{ topic.urlTitle }}')">Delete Topic</button>
+                    <button class="btn btn-primary" onclick="$('#topic-form-wrapper').toggleClass('hidden');">Edit Topic</button>
+                    <button class="btn btn-primary" onclick="window.topicFuncs.deleteTopic();">Delete Topic</button>
                 {% endif %}
                 <button class="btn btn-primary" onclick="window.location='{% url 'createThread' topic.urlTitle %}'">New Thread</button>
             </div>
@@ -44,8 +44,8 @@
     {% if user.is_superuser %}
     <script type="text/javascript">
     window.TOPIC_URLS = {
-				'deleteTopic' : '{% url 'deleteTopic' topic.urlTitle %}'
-			};
+        deleteTopic : '{% url 'deleteTopic' topic.urlTitle %}'
+    };
     </script>
     {% endif %}
 {% endblock %}

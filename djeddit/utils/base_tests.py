@@ -1,6 +1,9 @@
+import json
+
+from six.moves.urllib.parse import urlparse
+
 from django.contrib.auth.models import User
 from django.conf import settings
-from six.moves.urllib.parse import urlparse
 
 
 def createUser(username='user', email='user@example.com', password='pass', **kwargs):
@@ -60,10 +63,21 @@ class TestCalls(object):
 
     def _test_call_view_redirects(self, url, redirected_url, data=None):
         data = data or {}
-        response = self.client.get(url, data, follow=True)
-        self.assertRedirects(response, redirected_url)
+        response = self.client.post(url, data, follow=True)
+        self._assert_redirects(response, redirected_url)
 
     def _test_call_view_code(self, url, code, data=None, post=False):
         data = data or {}
         response = self.client.post(url, data) if post else self.client.get(url, data)
         self.assertEqual(response.status_code, code)
+
+    def _assert_redirects(self, response, redirected_url):
+        if response.status_code in (200, 302):
+            try:
+                self.assertRedirects(response, redirected_url)
+            except AssertionError:
+                content = json.loads(response.content)
+                self.assertEqual(content['redirect'], redirected_url)
+        else:
+            raise ValueError('invalid status code %s' % response.status_code)
+

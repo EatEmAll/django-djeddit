@@ -51,7 +51,7 @@
                             Reply
                         </button>
                         {% if node.parent %}
-                            <button onclick="location.href='#{{ node.parent.uid }}'" class="btn btn-default">
+                            <button onclick="window.location.href='#{{ node.parent.uid }}'" class="btn btn-default">
                                 Parent
                             </button>
                         {% endif %}
@@ -60,10 +60,10 @@
                                 Delete
                             </button>
                             {% if node == thread.op %}
-                                <button onclick="window.location = '{% url 'lockThread' thread.id %}';" class="btn btn-default">
+                                <button onclick="window.util.postRedirect('{% url 'lockThread' thread.id %}')" class="btn btn-default">
                                     {% if not thread.locked %}Lock{% else %}Unlock{% endif %}
                                 </button>
-                                <button onclick="window.location = '{% url 'stickyThread' thread.id %}';" class="btn btn-default btn-width-auto">
+                                <button onclick="window.util.postRedirect('{% url 'stickyThread' thread.id %}')" class="btn btn-default btn-width-auto">
                                     {% if thread.is_stickied %}Remove Sticky{% else %}Sticky{% endif %}
                                 </button>
                             {% endif %}

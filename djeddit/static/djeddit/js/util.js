@@ -3,21 +3,28 @@
  */
 
 window.util = {
-  getAbsoluteURL: function (url) {
-      var absoluteURL = new URL(url, window.BASE_URL);
-      return absoluteURL.href;
-  },
-  toggleForm: function(url, $placeAfter, params, $toggle, onSuccessFunc) {
-    if ($toggle === undefined || !$toggle.hasClass('clicked')) {
-        // load a form a given url
-        $.get(url, params, function (data) {
-            $placeAfter.after(data);
-            if (typeof onSuccessFunc === 'function')
-                onSuccessFunc();
-        });
+    getAbsoluteURL: function (url) {
+        var absoluteURL = new URL(url, window.BASE_URL);
+        return absoluteURL.href;
+    },
+    toggleForm: function (url, $placeAfter, params, $toggle, onSuccessFunc) {
+        if ($toggle === undefined || !$toggle.hasClass('clicked')) {
+            // load a form a given url
+            $.get(url, params, function (data) {
+                $placeAfter.after(data);
+                if (typeof onSuccessFunc === 'function')
+                    onSuccessFunc();
+            });
+        }
+        else // remove the form
+            $placeAfter.next().remove();
+        $toggle.toggleClass('clicked');
+    },
+    postRedirect: function (url, params) {
+        params = params || {};
+        $.post(url, params, function (data) {
+             if (data && data.redirect)
+                window.location = data.redirect;
+        }, "json");
     }
-    else // remove the form
-        $placeAfter.next().remove();
-    $toggle.toggleClass('clicked');
-  }
 };

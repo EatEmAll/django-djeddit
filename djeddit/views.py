@@ -3,12 +3,21 @@ import json
 import logging
 
 # Core Dajngo imports
-from django.http import JsonResponse, HttpResponse, Http404, HttpResponseForbidden, HttpResponseBadRequest, HttpResponseRedirect
+from django.http import JsonResponse, HttpResponse, Http404
+from django.http import HttpResponseForbidden, HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
+from django.views.decorators.http import require_POST
+
+from django import VERSION as DJANGO_VERSION
+
+if DJANGO_VERSION[:2] < (1, 10):
+    from django.core.urlresolvers import reverse
+else:
+    from django.urls import reverse
 
 # Third-party app imports
 from ipware.ip import get_ip
@@ -52,6 +61,7 @@ def createThread(request, topic_title=None):
     return redirect('topics')
 
 
+@require_POST
 @user_passes_test(lambda u: u.is_superuser)
 def deleteTopic(request, topic_title):
     try:
@@ -59,9 +69,10 @@ def deleteTopic(request, topic_title):
     except Topic.DoesNotExist:
         raise Http404()
     topic.delete()
-    return redirect('topics')
+    return HttpResponse(json.dumps(dict(redirect=reverse('topics'))))
 
 
+@require_POST
 @user_passes_test(lambda u: u.is_superuser)
 def lockThread(request, thread_id):
     try:
@@ -70,9 +81,10 @@ def lockThread(request, thread_id):
         raise Http404
     thread.locked = not thread.locked
     thread.save()
-    return HttpResponseRedirect(thread.relativeUrl)
+    return HttpResponse(json.dumps(dict(redirect=reverse('threadPage', args=[thread.topic.urlTitle, thread.pk]))))
 
 
+@require_POST
 @user_passes_test(lambda u: u.is_superuser)
 def stickyThread(request, thread_id):
     try:
@@ -81,7 +93,7 @@ def stickyThread(request, thread_id):
         raise Http404
     thread.is_stickied = not thread.is_stickied
     thread.save()
-    return HttpResponseRedirect(thread.relativeUrl)
+    return HttpResponse(json.dumps(dict(redirect=reverse('threadPage', args=[thread.topic.urlTitle, thread.pk]))))
 
 
 def topicsPage(request):
@@ -205,6 +217,7 @@ def editPost(request, post_uid=''):
         return render(request, 'djeddit/edit_post.html', context)
 
 
+@require_POST
 @login_required
 def votePost(request):
     try:
@@ -245,6 +258,7 @@ def votePost(request):
         return HttpResponseForbidden()
 
 
+@require_POST
 @user_passes_test(lambda u: u.is_superuser)
 def deletePost(request, post_uid):
     try:
@@ -256,9 +270,10 @@ def deletePost(request, post_uid):
     post_uid = post.uid
     post.delete()
     if op.uid == post_uid:
-        return redirect('topicPage', thread.topic.urlTitle)
+        url = reverse('topicPage', args=[thread.topic.urlTitle])
     else:
-        return HttpResponseRedirect(thread.relativeUrl)
+        url = thread.relativeUrl
+    return HttpResponse(json.dumps(dict(redirect=url)))
 
 
 def loadAdditionalReplies(request):
@@ -323,6 +338,7 @@ def usersPage(request):
     return render(request, 'djeddit/users_page.html', dict(Users=users))
 
 
+@require_POST
 @user_passes_test(lambda u: u.is_superuser)
 def setUserStatus(request):
     """set user status to either active (is_active=True), banned(is_active=False), or admin(is_superuser=True)"""

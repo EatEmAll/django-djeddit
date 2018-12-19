@@ -14,7 +14,7 @@ window.postFuncs = {
     toggleEditForm: function (post, toggle, toggleHeader) {
         var $placeAfter = $('#' + post + '>.bs-callout-main');
         $placeAfter.toggle();
-        this.togglePostForm(post, toggle, window.THREAD_URLS['editPost']);
+        this.togglePostForm(post, toggle, window.THREAD_URLS.editPost);
         if (toggleHeader)
             $('.bs-callout-heading').toggle();
     },
@@ -24,7 +24,7 @@ window.postFuncs = {
             vote += 1;
         if (downvoted)
             vote -= 1;
-        var url = window.THREAD_URLS['votePost'];
+        var url = window.THREAD_URLS.votePost;
         var params = {post: post, vote: vote};
         $.post(url, params, function (data) {
             var $post = $('#' + post);
@@ -52,8 +52,10 @@ window.postFuncs = {
         $('.post-container', '#' + post).slideToggle('fast');
     },
     deletePost: function (post, show_confirm) {
-        if (!show_confirm || confirm('This will permanently delete this thread and all related comments'))
-            window.location = urljoin(window.THREAD_URLS['deletePost'], post);
+        if (!show_confirm || confirm('This will permanently delete this thread and all related comments')) {
+                var url = urljoin(window.THREAD_URLS.deletePost, post);
+                window.util.postRedirect(url);
+            }
     },
     getPostRepliesUids: function (post) {
         // get uids of shown replies to a given post
@@ -69,7 +71,7 @@ window.postFuncs = {
     loadAdditionalReplies: function ($elem, post, op) {
         // load missing replies for a given post into $elem
         var excluded = this.getPostRepliesUids(post);
-        var url = window.THREAD_URLS['loadAdditionalRepliess'];
+        var url = window.THREAD_URLS.loadAdditionalRepliess;
         var params = {post: post ? post : op, excluded: JSON.stringify(excluded)};
         $.get(url, params, function (data) {
             $elem.replaceWith(data);

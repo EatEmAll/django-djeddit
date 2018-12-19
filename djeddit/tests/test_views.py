@@ -1,5 +1,5 @@
-from django import VERSION as DJANGO_VERSION
 from django.test import TestCase
+from django import VERSION as DJANGO_VERSION
 
 if DJANGO_VERSION[:2] < (1, 10):
     from django.core.urlresolvers import reverse
@@ -57,13 +57,13 @@ class DeleteTopicTest(TestCase, TestCalls):
 
     def testDeleteTopic(self):
         self.login()
-        self._test_call_view_submit(self.url, code=302)
+        self._test_call_view_redirects(self.url, reverse('topics'))
         self.assertRaises(Topic.DoesNotExist, self.topic.refresh_from_db)
 
     def testUnknownTopic(self):
         self.login()
         url = reverse('deleteTopic', args=['Fake_Topic'])
-        self._test_call_view_code(url, 404)
+        self._test_call_view_code(url, 404, post=True)
 
     def testRequireLogin(self):
         self._test_call_view_redirected_login(self.url)
@@ -528,7 +528,7 @@ class SetUserStatusTest(TestCase, TestCalls):
             self.assertTrue(user.is_active)
             self.assertTrue(user.is_superuser)
         else:
-            raise Exception('Invalid status: %s' % status)
+            raise ValueError('Invalid status: %s' % status)
 
     def testPromoteToAdmin(self):
         user = self._create_user_and_login()

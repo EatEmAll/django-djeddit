@@ -3,9 +3,9 @@
  */
 
 window.topicFuncs = {
-  deleteTopic: function (topic_title) {
-    if (confirm('This will permanently delete this topic and all related threads')) {
-        window.location = window.TOPIC_URLS['deleteTopic'];
+    deleteTopic: function () {
+        if (confirm('This will permanently delete this topic and all related threads')) {
+            window.util.postRedirect(window.TOPIC_URLS.deleteTopic);
+        }
     }
-  }
 };
