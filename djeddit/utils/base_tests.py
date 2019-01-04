@@ -76,7 +76,7 @@ class TestCalls(object):
             try:
                 self.assertRedirects(response, redirected_url)
             except AssertionError:
-                content = json.loads(response.content)
+                content = json.loads(response.content.decode('utf-8'))
                 self.assertEqual(content['redirect'], redirected_url)
         else:
             raise ValueError('invalid status code %s' % response.status_code)
