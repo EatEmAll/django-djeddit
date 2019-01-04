@@ -58,9 +58,9 @@ setup(
     include_package_data=True,
     install_requires=["django-crispy-forms>=1.6.1",
                       "django-mptt>=0.8.7",
-                      "awesome-slugify==1.6.5",
-                      "django-ipware",
-                      "django-meta"
+                      "awesome-slugify>=1.6.5",
+                      "django-ipware>=2.1.0",
+                      "django-meta>=1.4.1"
                       ],
     license="Apache Software License 2.0",
     zip_safe=False,
