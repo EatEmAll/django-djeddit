@@ -71,7 +71,7 @@ window.postFuncs = {
     loadAdditionalReplies: function ($elem, post, op) {
         // load missing replies for a given post into $elem
         var excluded = this.getPostRepliesUids(post);
-        var url = window.THREAD_URLS.loadAdditionalRepliess;
+        var url = window.THREAD_URLS.loadAdditionalReplies;
         var params = {post: post ? post : op, excluded: JSON.stringify(excluded)};
         $.get(url, params, function (data) {
             $elem.replaceWith(data);
