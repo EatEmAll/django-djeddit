@@ -62,7 +62,10 @@ matrix:
   - python: "3.5"
     env: TOX_ENV=py35-django-21
 
-
+before_install:
+  - sudo apt -y update
+  - sudo apt install sqlite3
+  - sudo sqlite3 -version
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install:
   - pip install -r requirements_test.txt
