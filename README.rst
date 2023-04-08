@@ -41,7 +41,7 @@ Screenshots
 
 .. image:: https://raw.githubusercontent.com/EatEmAll/django-djeddit/master/media/Comments.jpg
 
-Supported Dajngo versions
+Supported Django versions
 -------------------------
 
 The app is currently tested with Django 1.8, 1.9, 1.10 and 1.11, 2.0
@@ -76,7 +76,7 @@ djeddit_settings to context_processors:
         ...
     ]
 
-jango-djeddit's URL patterns:
+django-djeddit's URL patterns:
 
 .. code-block:: python
 
